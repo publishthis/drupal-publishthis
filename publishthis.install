@@ -1,0 +1,50 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the publishthis module.
+ */
+
+/**
+ * Implementation of hook_schema().
+ */
+function publishthis_schema() {
+  $schema['pt_publishactions'] = array(
+    'fields' => array(
+      'id' => array('type' => 'serial', 'not null' => TRUE),
+      'name' => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE),
+      'title' => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE),
+      'format_type' => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE),
+      'value' => array('type' => 'blob', 'not null' => TRUE),
+    ),
+    'primary key' => array('id'),
+  );
+  $schema['pt_docid_links'] = array(
+    'fields' => array(
+      'id' => array('type' => 'serial', 'not null' => TRUE),
+      'setName' => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE),
+      'docId' => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE),
+      'nid' => array('type' => 'int', 'not null' => TRUE),
+      'curateUpdateDate' => array('type' => 'varchar', 'length' => 255, 'not null' => FALSE)
+    ),
+    'primary key' => array('id'),
+  );
+  return $schema;
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function publishthis_uninstall() {
+
+  // Clear variables
+  $name = 'pt_';
+  db_delete('variable')
+    ->condition('name', db_like($name) . '%', 'LIKE')
+    ->execute();
+
+  cache_clear_all('publishthis','cache',TRUE);
+  menu_rebuild();
+  
+}
+

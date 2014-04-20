@@ -1,0 +1,16 @@
+; $Id$
+name = PublishThis Curation
+description = PublishThis module that creates pages from curated content as well as widgets for automated content.
+dependencies[] = menu
+package = "Other"
+core = 7.x
+version = "7.x-1.0"
+configure = admin/config/system/publishthis
+files[] = publishthis-settings.php
+files[] = classes/common/class-api-common.php
+files[] = classes/class-api.php
+files[] = classes/common/class-utils-common.php
+files[] = classes/class-utils.php
+files[] = classes/class-publish.php
+files[] = classes/class-render.php
+files[] = classes/class-endpoint.php
