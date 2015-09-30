@@ -66,7 +66,30 @@ function publishthis_settings($form, &$form_state) {
             </div>
           </div>'
   );
-  
+  $form['pt_settings']['taxonomy'] = array(
+    '#type' => 'checkboxes',
+    '#title' => t('Taxonomy'),
+    '#options' => drupal_map_assoc( array( t('I want to use taxonomy set from PublishThis Content Mixes') ) ),
+    '#default_value' => isset($pt_value['taxonomy']) ? $pt_value['taxonomy'] : 'I want to use taxonomy set from PublishThis Content Mixes',
+    '#description' => t(''),
+    '#prefix' => '<div class="taxonomy-publish-block"><div class="taxonomy-publish">',
+    '#suffix' => '</div>',
+  );
+	$node_taxonomy = taxonomy_get_vocabularies();
+	$taxonomy_types = array();
+	$taxonomy_types['default'] = 'Default';
+	foreach ($node_taxonomy as $node) {
+		$taxonomy_types[$node->machine_name] = $node->name;
+	}
+	$form['pt_settings']['taxonomy_group'] = array(
+		'#type' => 'select',
+		'#title' => t('Taxonomy list'),
+		'#options' => $taxonomy_types,
+		'#default_value' => isset($pt_value['taxonomy_group']) ? $pt_value['taxonomy_group'] : 'Default',
+		'#prefix' => '<div class="taxonomy-group-block">',
+                '#suffix' => '</div></div>',
+	);
+
   $form['pt_settings']['api_version'] = array(
     '#type' => 'hidden',
     '#default_value' => '3.0'

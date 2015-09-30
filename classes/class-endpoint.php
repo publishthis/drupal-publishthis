@@ -143,7 +143,57 @@ class Publishthis_Endpoint {
 
 		$this->sendSuccess( "published" );
 		return;
-	}	
+	}
+	private function array_values_recursive($arr) {
+		$arr = array_values($arr);
+		foreach($arr as $key => $val) {
+			if(array_values($val['subcategories']) !== $val['subcategories']) {
+				$arr[$key]['subcategories'] = $this->array_values_recursive($val['subcategories']);
+			}
+		}
+
+		return $arr;
+	}
+	private function actionGetAuthors() {
+		$authors = array();
+		$obj = new stdClass();
+
+		$users = entity_load('user');
+		$emails = '';
+		foreach($users as $user) {
+			if (array_key_exists(3, $user->roles)) {
+				if (strlen($emails) > 0) {
+					$emails .= ' ' . $user->mail;
+				} else {
+					$emails = $user->mail;
+				}
+			}
+		}
+
+		foreach ( $users as $user ) {
+			$authors[] = array( 'id' => $user->ID, 'name' => $user->display_name );
+		}
+
+		$obj->success = true;
+		$obj->errorMessage = null;
+		$obj->authors = $authors;
+
+		$this->sendJSON( $obj );
+	}
+	private function actionGetCategories() {
+		$category = array(
+			'id' => intval( 1 ),
+			'name' => 'cat-1',
+			'taxonomyId' => '222',
+			'taxonomyName' => 'taxonomy',
+			'subcategories' => array() );
+		$categories[1] = $category;
+		$obj = new stdClass();
+		$obj->success = true;
+		$obj->errorMessage = null;
+		$obj->categories = $categories;
+		$this->sendJSON( $obj );
+	}
 
 	/**
 	 * Process request main function
@@ -171,7 +221,14 @@ class Publishthis_Endpoint {
 				}
 				$feedId = intval( $arrEndPoint["feedId"], 10 );
 				$this->actionPublish( $feedId );
-				break;
+			break;
+			case "getAuthors":
+				$this->actionGetAuthors();
+			break;
+			case "getCategories":
+				$this->actionGetCategories();
+			break;
+
 
 			default:
 				$this->sendFailure( "Empty or bad request made to endpoint" );

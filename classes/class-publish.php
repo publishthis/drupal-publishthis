@@ -555,7 +555,7 @@ class Publishthis_Publish {
 	private function _get_featured_image( $contentImageUrl, $content_features ) {
 		$file_name = uniqid() . '_' . basename($contentImageUrl);
 		$ok_override_fimage_size = $content_features['ignore_original_image']['resize_featured_image']==="resize_featured_image" ? "1" : "0";
- 
+
 		//build the url that we would need to download the featured image for
 		switch ( $content_features ['featured_image_size'] ) {
 			case 'custom':
@@ -570,7 +570,7 @@ class Publishthis_Publish {
 				break;
 
 			case 'theme_default':
-			default: 
+			default:
 				$resize_pref = "";
 				break;
 		}

@@ -268,14 +268,14 @@ function publishthis_addnew_publishingactions ($form , &$form_state) {
     '#default_value' => $cate_selected,
   );
 
-  $form[$group]['taxonomy_group'] = array(
+/*  $form[$group]['taxonomy_group'] = array(
     '#type' => 'select',
     '#title' => t('Taxonomy'),
     '#prefix' => '<div id="template-taxonomies-replace">',
     '#suffix' => '</div>',
     '#options' => _ajax_get_taxonomy_dropdown_options($cate_selected),
     '#default_value' => isset($pt_value['taxonomy_group'])?$pt_value['taxonomy_group']: '',
-  );
+  );*/
 
   $def_featured_image_option = 'Post Image: Include document image in template? (uncheck this if your Featured image gets inserted into your post by your theme)';
 
@@ -942,6 +942,7 @@ function _image_size_fields($name, $prefix = '', $pt_value = array() ) {
     '#options' => array('theme_default' => $default, 'custom' => t('Width'), 'custom_max_width' => t('Max Width')),
     '#default_value' => $img_size,
     '#description' => t(''),   
+    '#prefix' => '<div class ="featured-image-box">',
   );
   
   $form[$prefix.'innerdiv_open'] = array(
@@ -969,6 +970,7 @@ function _image_size_fields($name, $prefix = '', $pt_value = array() ) {
     '#type' => 'textfield',
     '#size' => 5,    
     '#default_value' => $def_max,
+    '#suffix' => '</div>'
   );
   
   $form[$prefix.'div_close'] = array(
