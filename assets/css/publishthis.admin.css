@@ -80,24 +80,32 @@ fieldset.horizontal-list div.form-item.form-type-select>label { float: left; wid
 
 .form-disabled legend a { color: #9E9E9E; }
 .featured-image-box {position: relative;}
-.featured-image-box .form-item-featured-image-width {
+.featured-image-box .form-item-featured-image-width,
+.featured-image-box .form-item-embed-image-width,
+.featured-image-box .form-item-image-width {
   position: absolute;
   left: 70px;
   top: 55px;
 }
-.featured-image-box .form-item-featured-image-height label {
+.featured-image-box .form-item-featured-image-height label,
+.featured-image-box .form-item-embed-image-height label,
+.featured-image-box .form-item-image-height label {
   float: left;
   font-weight: normal;
   margin-right: 10px;
   font-size: 12px;
   line-height: 22px;
 }
-.featured-image-box .form-item-featured-image-height {
+.featured-image-box .form-item-featured-image-height,
+.featured-image-box .form-item-embed-image-height,
+.featured-image-box .form-item-image-height {
   position: absolute;
   left: 150px;
   top: 55px;
 }
-.featured-image-box .form-item-featured-image-maxwidth {
+.featured-image-box .form-item-featured-image-maxwidth,
+.featured-image-box .form-item-embed-image-maxwidth,
+.featured-image-box .form-item-image-maxwidth {
   position: absolute;
   left: 95px;
   top: 85px;
@@ -119,7 +127,7 @@ fieldset.horizontal-list div.form-item.form-type-select>label { float: left; wid
 .pt-options .image_field_style .form-item-featured-image-height { margin: -20px 0 0 0; padding: 0; float: left; width: 140px; }
 .pt-options .image_field_style .form-item-featured-image-height label { float: left; font-weight: normal; margin-right: 10px; font-size: 12px; }
 .pt-options .image_field_style .image_width_style {float: left; width: 100%; margin-left: -27px; margin-bottom: 8px; }
-.pt-options .image_field_style .form-item-featured-image-maxwidth { margin: 0; padding: 0; float: left;  width: 100%; } */
+.pt-options .image_field_style .form-item-featured-image-maxwidth { margin: 0; padding: 0; float: left;  width: 100%; } 
 
 .pt-customize .image_text_fields { clear: right; float: left; width: 235px; margin-top: 62px;  margin-left: -28px; }
 .pt-customize .image_field_style .form-item-image-width { margin: 0 10px 0 0; padding: 0; float: left; }
@@ -131,7 +139,7 @@ fieldset.horizontal-list div.form-item.form-type-select>label { float: left; wid
 .pt-customize .image_text_fields { clear: right; float: left; width: 235px; margin-top: 62px;  margin-left: -28px; }
 .pt-customize .image_field_style .form-item-embed-image-width { margin: 0 10px 0 0; padding: 0; float: left; }
 .pt-customize .image_field_style .form-item-embed-image-height { margin: 0; padding: 0; float: left; width: 140px; }
-.pt-customize .image_field_style .form-item-embed-image-height label { float: left; font-weight: normal; margin-right: 10px; font-size: 12px; }
+.pt-customize .image_field_style .form-item-embed-image-height label { float: left; font-weight: normal; margin-right: 10px; font-size: 12px; } */
 .form-type-select.form-item-vertical { float: left;  width: 7.5%; }
 .page-admin-config-system-publishthis .form-type-item {  margin: 0 0 -16px; }
 .form-item.form-type-radios.form-item-title-customize-fields-wraplink { float:left; }

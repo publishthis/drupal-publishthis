@@ -196,21 +196,38 @@ class Publishthis_Endpoint {
   }
 
   private function actionGetCategories() {
+	global $pt_settings_value;
 	$categories = array();
-	$terms = taxonomy_get_tree(1);
-	foreach ( $terms as $term ) {
-	  $category = array(
-		'id' => intval( $term->tid ),
-		'name' => $term->name,
-		'taxonomyId' => intval( $term->tid ),
-		'taxonomyName' => $term->name,
-		'subcategories' => array() );
-	  $categories[ $term->tid ] = $category;
+	if ($pt_settings_value['taxonomy']['I want to use taxonomy set from PublishThis Content Mixes'] !== 0) {
+	  $taxonomies = taxonomy_vocabulary_get_names();
+	  foreach ($taxonomies as $taxonomie) {
+		if ($taxonomie->machine_name == $pt_settings_value['taxonomy_group']) {
+
+		  $tax_id = $taxonomie->vid;
+
+		}
+		if ($pt_settings_value['taxonomy_group'] == 'default') {
+		  $tax_id = 1;
+
+		}
+	  }
+	  $terms    = taxonomy_get_tree($taxonomie->vid);
+	  $tax_name = taxonomy_vocabulary_load($tax_id);
+	  foreach ($terms as $term) {
+		$category               = array(
+		  'id'            => intval($term->tid),
+		  'name'          => $term->name,
+		  'taxonomyId'    => intval($term->tid),
+		  'taxonomyName'  => $tax_name->machine_name,
+		  'subcategories' => array()
+		);
+		$categories[$term->tid] = $category;
+	  }
 	}
 	$obj               = new stdClass();
 	$obj->success      = TRUE;
 	$obj->errorMessage = NULL;
-	$obj->categories   = $this->array_values_recursive( $categories );
+	$obj->categories   = $this->array_values_recursive($categories);
 	$this->sendJSON($obj);
   }
 
@@ -236,7 +253,6 @@ class Publishthis_Endpoint {
 		case "verify":
 		  $this->actionVerify();
 		  break;
-
 		case "publish":
 		  if ($pt_settings_value['curated_publish'] != 'publishthis_import_from_manager') {
 			$this->sendFailure("Publishing through CMS is disabled");
@@ -251,8 +267,6 @@ class Publishthis_Endpoint {
 		case "getCategories":
 		  $this->actionGetCategories();
 		  break;
-
-
 		default:
 		  $this->sendFailure("Empty or bad request made to endpoint");
 		  break;
