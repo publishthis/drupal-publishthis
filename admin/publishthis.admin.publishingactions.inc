@@ -257,7 +257,7 @@ function publishthis_addnew_publishingactions($form, &$form_state) {
   }
   $categories = array();
   global $pt_settings_value;
-  if ($pt_settings_value['taxonomy']['I want to use taxonomy set from PublishThis Content Mixes'] !== 0) {
+  if ($pt_settings_value['taxonomy']['get_term'] !== 0) {
 	$taxonomies = taxonomy_vocabulary_get_names();
 	foreach ($taxonomies as $taxonomie) {
 	  if ($taxonomie->machine_name == $pt_settings_value['taxonomy_group']) {

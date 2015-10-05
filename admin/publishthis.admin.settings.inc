@@ -50,7 +50,6 @@ function publishthis_settings($form, &$form_state) {
 	'#default_value' => isset($pt_value['curated_publish']) ? $pt_value['curated_publish'] : 'publishthis_import_from_manager',
 	'#description'   => t('')
   );
-
   $form['pt_settings']['pause_polling'] = array(
 	'#type'          => 'checkboxes',
 	'#title'         => t('Pause Polling'),
@@ -71,16 +70,17 @@ function publishthis_settings($form, &$form_state) {
   $form['pt_settings']['taxonomy'] = array(
 	'#type'          => 'checkboxes',
 	'#title'         => t('Taxonomy'),
-	'#options'       => drupal_map_assoc(array(t('I want to use taxonomy set from PublishThis Content Mixes'))),
+	'#options'       => array('get_term' => "I want to use taxonomy set from PublishThis Content Mixes"),
 	'#default_value' => isset($pt_value['taxonomy']) ? $pt_value['taxonomy'] : 'I want to use taxonomy set from PublishThis Content Mixes',
 	'#description'   => t(''),
 	'#prefix'        => '<div class="taxonomy-publish-block"><div class="taxonomy-publish">',
-	'#suffix'        => '</div>',
+	'#suffix'        => '<span></span></div>',
   );
+
   $node_taxonomy                   = taxonomy_get_vocabularies();
   $taxonomy_types                  = array();
   $taxonomy_types['default']       = 'Default';
-  foreach ($node_taxonomy as $node) {
+   foreach ($node_taxonomy as $node) {
 	$taxonomy_types[$node->machine_name] = $node->name;
   }
   $form['pt_settings']['taxonomy_group'] = array(
@@ -239,7 +239,8 @@ function api_token_validate_callback($form, $form_state) {
   // return form_state value  
   return $form;
 }
-
+/*$test = get_paged_curated_feed_content_by_id(26526,);
+pa($test,1);*/
 /**
  * Implements of hook_form_validate()
  * @desc Valdiate form value
