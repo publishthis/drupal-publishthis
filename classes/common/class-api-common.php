@@ -353,6 +353,74 @@ abstract class Publishthis_API_Common {
     }
   }
 
+  /**
+   * Returns the curated content from a feeds template section.
+   *
+   * http://docs.publishthis.com/edcenter/developers-and-admins/api-reference/api-method-contentcuratedmixmixid/
+   */
+  function get_curated_feed_content_by_id( $feed_id, $params = array() ) {
+
+	$params = $params + array ( 'results' => 50, 'skip' => 0, 'token' => $this->_get_token() );
+
+	$content = array ();
+
+	do {
+	  $url = $this->_compose_api_call_url( '/content/curated/mix/'.$feed_id, $params );
+
+	  try {
+		$response = $this->_request ( $url );
+
+		$result_list = ( array ) $response->resultList;
+		if ( empty ( $result_list ) )
+		  break;
+
+		$content = array_merge( $content, $result_list );
+
+		$params ['skip'] += $params ['results'];
+	  } catch ( Exception $ex ) {
+		$this->_log_message( $ex->getMessage() );
+		break;
+	  }
+	}
+	while( $params['skip'] < $response->totalAvailable );
+
+	return $content;
+  }
+
+
+  /**
+   * Returns the curated content from a feeds template section.
+   *
+   * http://docs.publishthis.com/edcenter/developers-and-admins/api-reference/api-method-contentcuratedmixmixid/
+   */
+  function get_paged_curated_feed_content_by_id( $mix_id, $params = array() ) {
+	$params = $params + array ('token' => $this->_get_token() );
+
+	$content = array ();
+
+
+	$url = $this->_compose_api_call_url( '/content/curated/mix/'.$mix_id, $params );
+
+	try {
+	  $response = $this->_request ( $url );
+
+	  $result_list = ( array ) $response->resultList;
+	  if ( empty ( $result_list ) ){
+		return $content;
+	  }
+
+	  $content = array_merge( $content, $result_list );
+
+
+	} catch ( Exception $ex ) {
+	  $this->_log_message( $ex->getMessage() );
+	  return array();
+	}
+
+
+	return $content;
+  }
+
   /*
    * Publishthis Sections functions
    */
