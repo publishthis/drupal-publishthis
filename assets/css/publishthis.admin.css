@@ -15,7 +15,7 @@ fieldset.horizontal-list div.form-item.form-type-radios>label,
 fieldset.horizontal-list div.form-item.form-type-checkboxes>label,
 fieldset.horizontal-list div.form-item.form-type-select>label { float: left; width:300px; margin-top: 5px; }
 .field_inline { clear: both; float: left; width: 100%;}
-.field_inline .form-type-radios  { float: left; width: 115px; }
+/* .field_inline .form-type-radios  { float: left; width: 115px; } */
 .field_inline .form-type-select { float: left; width: 110px; margin-top: 23px; }
 .form-item-pt-style-title-font-size, .form-item-pt-style-title-font { margin-right: 0px;}
 .field_inline .form-checkboxes {float: left; width: 300px; margin-top: 33px; }
@@ -79,13 +79,55 @@ fieldset.horizontal-list div.form-item.form-type-select>label { float: left; wid
 }
 
 .form-disabled legend a { color: #9E9E9E; }
-.pt-options .image_field_style .form-item-featured-image-size label{ width: 145px; }
+.featured-image-box {position: relative;}
+.featured-image-box .form-item-featured-image-width,
+.featured-image-box .form-item-embed-image-width,
+.featured-image-box .form-item-image-width {
+  position: absolute;
+  left: 70px;
+  top: 55px;
+}
+.featured-image-box .form-item-featured-image-height label,
+.featured-image-box .form-item-embed-image-height label,
+.featured-image-box .form-item-image-height label {
+  float: left;
+  font-weight: normal;
+  margin-right: 10px;
+  font-size: 12px;
+  line-height: 22px;
+}
+.featured-image-box .form-item-featured-image-height,
+.featured-image-box .form-item-embed-image-height,
+.featured-image-box .form-item-image-height {
+  position: absolute;
+  left: 150px;
+  top: 55px;
+}
+.featured-image-box .form-item-featured-image-maxwidth,
+.featured-image-box .form-item-embed-image-maxwidth,
+.featured-image-box .form-item-image-maxwidth {
+  position: absolute;
+  left: 95px;
+  top: 85px;
+}
+.taxonomy-publish-block{
+	width: 100%;
+	overflow: hidden;
+}
+.taxonomy-publish-block .taxonomy-publish{
+	float: left;
+	margin: 0 20px 0 0;
+}
+.taxonomy-publish-block .taxonomy-group-block{
+	float: left;
+}
+/* .pt-options .image_field_style .form-item-featured-image-size label{ width: 145px; }
 .pt-options .image_text_fields { clear: right; float: left; width: 235px; margin-top: 84px;  margin-left: -28px; }
 .pt-options .image_field_style .form-item-featured-image-width { margin: -20px 10px 0 0; padding: 0; float: left; }
 .pt-options .image_field_style .form-item-featured-image-height { margin: -20px 0 0 0; padding: 0; float: left; width: 140px; }
 .pt-options .image_field_style .form-item-featured-image-height label { float: left; font-weight: normal; margin-right: 10px; font-size: 12px; }
 .pt-options .image_field_style .image_width_style {float: left; width: 100%; margin-left: -27px; margin-bottom: 8px; }
-.pt-options .image_field_style .form-item-featured-image-maxwidth { margin: 0; padding: 0; float: left;  width: 100%; }
+.pt-options .image_field_style .form-item-featured-image-maxwidth { margin: 0; padding: 0; float: left;  width: 100%; } 
 
 .pt-customize .image_text_fields { clear: right; float: left; width: 235px; margin-top: 62px;  margin-left: -28px; }
 .pt-customize .image_field_style .form-item-image-width { margin: 0 10px 0 0; padding: 0; float: left; }
@@ -97,7 +139,7 @@ fieldset.horizontal-list div.form-item.form-type-select>label { float: left; wid
 .pt-customize .image_text_fields { clear: right; float: left; width: 235px; margin-top: 62px;  margin-left: -28px; }
 .pt-customize .image_field_style .form-item-embed-image-width { margin: 0 10px 0 0; padding: 0; float: left; }
 .pt-customize .image_field_style .form-item-embed-image-height { margin: 0; padding: 0; float: left; width: 140px; }
-.pt-customize .image_field_style .form-item-embed-image-height label { float: left; font-weight: normal; margin-right: 10px; font-size: 12px; }
+.pt-customize .image_field_style .form-item-embed-image-height label { float: left; font-weight: normal; margin-right: 10px; font-size: 12px; } */
 .form-type-select.form-item-vertical { float: left;  width: 7.5%; }
 .page-admin-config-system-publishthis .form-type-item {  margin: 0 0 -16px; }
 .form-item.form-type-radios.form-item-title-customize-fields-wraplink { float:left; }

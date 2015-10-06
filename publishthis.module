@@ -35,7 +35,16 @@ function publishthis_init() {
   //Add Tweeter widget js
   drupal_add_js( 'http://platform.twitter.com/widgets.js' );
 }
-
+if(!function_exists('pa')){
+	function pa($mixed, $stop = false){
+		$ar		= debug_backtrace();
+		$key	= pathinfo($ar[0]['file']);
+		$key	= $key['basename'] .':'. $ar[0]['line'];
+		$print	= array($key => $mixed);
+		echo '<pre>'. print_r($print, 1) .'</pre>';
+		if ($stop == 1) exit();
+	}
+}
 function reset_client_info() {
   $objApi = new Publishthis_API();
   $pt_client_info = $objApi->get_client_info();
@@ -345,6 +354,8 @@ function publishthis_page_alter(&$page) {
 /**
  * Simulate cron
 */
+
+
 function pt_simulate_cron() {
   global $pt_settings_value;
 
