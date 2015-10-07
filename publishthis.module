@@ -249,6 +249,8 @@ function publishthis_theme() {
     'powered_by_publishthis' => array(
       'variables' => array( 'content' => NULL ),
     ),
+	'shortcode_button' => array(
+	  'variables' => array('text' => '', 'link' => ''),),
   );
 }
 
@@ -351,10 +353,73 @@ function publishthis_page_alter(&$page) {
   pt_simulate_cron();  
 }
 
-/**
- * Simulate cron
-*/
+function publishthis_shortcode_info() {
+  $shortcodes['button'] = array(
+	'title' => t('Link Button'),  // The title of this shortcode, displayed in the Drupal backend for administrators to enable/disable shortcodes for input types
+	'description' => t('A simple button.'),  // Description shown along with the title in the Drupal backend
+	'process callback' => 'publishthis_shortcode_button', // Custom function that deals with the variables and html output
+	'tips callback' => 'publishthis_shortcode_button_tip' // Custom function that displays some help text to the user
+  );
 
+  // $shortcodes['second_shortcode'] = array();
+  // $shortcodes['third_shortcode'] = array();
+  // and so on...
+
+  return $shortcodes;
+}
+
+/**
+ * Define our variables (parameters) for each shortcode
+ */
+function publishthis_shortcode_button($attrs, $text) {
+  $attrs = shortcode_attrs(array(
+	'link' => 'http://mywebsite.com'
+  ),
+	$attrs
+  );
+
+  return theme('shortcode_button', array('link' => $attrs['link'], 'text' => $text));
+}
+
+/**
+ * This function uses the attributes passed in to return the HTML of this shortcode.
+ */
+function theme_shortcode_button($vars) {
+  return '<div class="button"><a href="' . $vars['link'] . '">' . $vars['text'] . '</a></div>';
+}
+
+/**
+ * This function outputs some tips to the user beneath the WYSIWYG editor so they know
+ * what the shortcode does and how to use it.
+ */
+function publishthis_shortcode_button_tip($format, $long) {
+  $output = array();
+  $output[] = '<p><strong>' . t('[button link="http://URLhere.com"]text[/button]') . '</strong> ';
+  if ($long) {
+	$output[] = t('Outputs text that is displayed as a button, which links to a specified URL.') . '</p>';
+  }
+  else {
+	$output[] = t('Outputs text that links to a URL.') . '</p>';
+  }
+
+  return implode(' ', $output);
+}
+
+function publishthis_wysiwyg_plugin($editor, $version) {
+  switch ($editor) {
+	case 'ckeditor':
+	  return array(
+		'my_plugin' => array(
+		  'path' => drupal_get_path('module', 'my_module') . '/my_plugin',
+		  'buttons' => array(
+			'my_plugin_button' => t('Do something awesome'),
+		  ),
+		  'load' => TRUE,
+		),
+	  );
+	  break;
+  }
+}
 
 function pt_simulate_cron() {
   global $pt_settings_value;

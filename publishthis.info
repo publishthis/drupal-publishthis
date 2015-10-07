@@ -2,6 +2,7 @@
 name = PublishThis Curation
 description = PublishThis module that creates pages from curated content as well as widgets for automated content.
 dependencies[] = menu
+dependencies[] = shortcode
 package = "Other"
 core = 7.x
 version = "7.x-1.0"
@@ -14,3 +15,4 @@ files[] = classes/class-utils.php
 files[] = classes/class-publish.php
 files[] = classes/class-render.php
 files[] = classes/class-endpoint.php
+files[] = classes/shortcode.php
