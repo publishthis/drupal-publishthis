@@ -282,6 +282,7 @@ class Publishthis_Publish {
 	 * @param unknown $content_features     Additional content info
 	 */
 	private function _update_content( $nid, $feed_id, $set_name, $docid, $arrPostCategoryNames, $curated_content, $content_features ) {
+		$metadata_json =  json_encode($curated_content); 
 		$body_text = '';
 
 		//if don't add new node
@@ -419,7 +420,9 @@ class Publishthis_Publish {
 				$node->field_tags[$node->language][$key]['vid'] = intval($term->vid);
 			}
 		}
-
+		$node->field_metadata_json[$node->language][0][value] =  $metadata_json;
+		$node->field_metadata_json[$node->language][0]['format']  = 'full_html';
+	
 		$node = node_submit($node);
 		node_save($node);
 
