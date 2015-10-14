@@ -31,24 +31,16 @@ function publishthis_schema() {
   );
  return $schema;
 }
-/**
- * Implementation of hook_schema_alter().
- */
-function publishthis_schema_alter(&$schema) {
-  $schema['node']['fields']['metadata'] = array(
-   'type' => 'longtext',
-      'description' => "Metadata",
-      'not null' => FALSE,
-  );
-}
+
 /**
  * Implementation of hook_update().
  */
 function publishthis_update_01() {
   $spec = array(
-    'type' => 'longtext',
-    'description' => "Metadata",
+    'type' => 'VARCHAR',
+    'description' => 'Metadata',
     'not null' => FALSE,
+     'length' => 65535,
   );
 db_add_field( 'node', 'metadata', $spec);
 }
@@ -58,9 +50,10 @@ db_add_field( 'node', 'metadata', $spec);
  */
 function publishthis_install() {
     $spec = array(
-    'type' => 'longtext',
-      'description' => "Metadata",
+    'type' => 'VARCHAR',
+      'description' => 'Metadata',
       'not null' => FALSE,
+      'length' => 65535,
     );
    db_add_field( 'node', 'metadata', $spec);
 }
