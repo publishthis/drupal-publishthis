@@ -6,7 +6,7 @@
 function publishthis_init() {
   global $pt_settings_value;
   global $pt_client_info;
-  
+ 
   if( $cache = cache_get('pt_client_info') ) {
     $pt_client_info = $cache->data;
     if( time() - $cache->expire > 0 ) {
@@ -23,12 +23,18 @@ function publishthis_init() {
   // css uses to manage fields style
   drupal_add_css(drupal_get_path('module', 'publishthis') . '/assets/css/publishthis.admin.css');
 
+  if(isset($pt_settings_value['endpoint']) && !empty($pt_settings_value['endpoint'])){
+    $pt_endpoint  = $pt_settings_value['endpoint'];
+  }
+  else{
+    $pt_endpoint = 'pt_endpoint';
+  }
   $query_params = drupal_get_query_parameters(null, array());
-  if( count($query_params) == 1 && $query_params['q']=='pt_endpoint') {
+  if( count($query_params) == 1 && $query_params['q']== $pt_endpoint) {
     init_pt_endpoint();
     exit;
   }
-    
+
   // common js
   drupal_add_js(drupal_get_path('module', 'publishthis') . '/assets/js/publishthis.js');
 
@@ -148,10 +154,6 @@ function publishthis_menu() {
   
   return $items;
 }
-
-/*
-* TODO: Implement WP Widgets here
-*/
 function publishthis_block_info(){
    
   $blocks = array();
@@ -259,6 +261,15 @@ function theme_powered_by_publishthis() {
     return '<span> <img src="'. $image_path.'" alt="publishthis" /> </span>';
     
   }
+}
+
+/**
+ * Generate random endpoint
+ */
+function getRandomWord($len = 10) {
+  $word = array_merge(range('a', 'z'), range('A', 'Z'));
+  shuffle($word);
+  return substr(implode($word), 0, $len);
 }
 
 /**

@@ -118,6 +118,9 @@ fieldset.horizontal-list div.form-item.form-type-select>label { float: left; wid
 	float: left;
 	margin: 0 20px 0 0;
 }
+#endpoint_input{
+	display: none;
+}
 .taxonomy-publish-block .taxonomy-group-block{
 	float: left;
 }

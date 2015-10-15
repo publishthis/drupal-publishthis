@@ -57,15 +57,25 @@ function publishthis_settings($form, &$form_state) {
 	'#default_value' => !empty($pt_value) ? (array) $pt_value['pause_polling']['Stop polling the API for new content'] : array(),
 	'#description'   => t('')
   );
-
+  if(isset($pt_value['endpoint']) && !empty($pt_value['endpoint'])){
+    $pt_endpoint  = $pt_value['endpoint'];
+  }
+  else{
+    $pt_endpoint = getRandomWord();
+  }
   $form['pt_settings']['endpoint'] = array(
-	'#markup' => '<div class="form-item form-type-checkboxes">
+    '#type'          => 'textfield',
+    '#default_value' => isset($pt_value['endpoint']) ? $pt_value['endpoint'] : $pt_endpoint,
+    '#required'      => TRUE,
+    '#description'   => t(''),
+    '#prefix'        => '<div class="form-item form-type-checkboxes">
 			  <label for="edit-cms-url">CMS URL</label>
-			<div class="form-checkboxes" id="edit-cms-url">
-			  <div class="form-item form-type-checkbox">' . $base_url . '/?q=pt_endpoint
+			<div id="edit-cms-url">
+			  <div class="form-item form-type-checkbox">' . $base_url . '/?q='.  $pt_endpoint .'
 			  </div>
 			</div>
-		  </div>'
+		  </div><div id="endpoint_input">',
+    '#suffix'   => '</div>',
   );
   $form['pt_settings']['taxonomy'] = array(
 	'#type'          => 'checkboxes',
