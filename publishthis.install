@@ -35,14 +35,17 @@ function publishthis_schema() {
 /**
  * Implementation of hook_update().
  */
-function publishthis_update_01() {
+function publishthis_update_08() {
   $spec = array(
-    'type' => 'VARCHAR',
-    'description' => 'Metadata',
-    'not null' => FALSE,
-     'length' => 65535,
+    'type' => 'varchar',
+     'length' => '6000',
+     'not null' => TRUE,
+     'default' => '',
+     'description' => 'PTMetaData',
   );
-db_add_field( 'node', 'metadata', $spec);
+  if (!db_field_exists('node', 'ptmetadata')) {
+    db_add_field( 'node', 'ptmetadata', $spec);
+  }
 }
 
 /**
@@ -50,12 +53,15 @@ db_add_field( 'node', 'metadata', $spec);
  */
 function publishthis_install() {
     $spec = array(
-    'type' => 'VARCHAR',
-      'description' => 'Metadata',
-      'not null' => FALSE,
-      'length' => 65535,
-    );
-   db_add_field( 'node', 'metadata', $spec);
+     'type' => 'varchar',
+     'length' => '6000',
+     'not null' => TRUE,
+     'default' => '',
+     'description' => 'PTMetaData',
+   );
+  if (!db_field_exists('node', 'ptmetadata')) {
+    db_add_field( 'node', 'ptmetadata', $spec);
+  }
 }
 
 /**
@@ -70,7 +76,7 @@ function publishthis_uninstall() {
 
   cache_clear_all('publishthis','cache',TRUE);
   menu_rebuild();
-  db_drop_field('node', 'metadata');
+  db_drop_field('node', 'ptmetadata');
 }
 function publishthis_fields_field_schema($field) {
   switch($field['type']) {

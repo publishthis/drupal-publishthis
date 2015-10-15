@@ -165,9 +165,9 @@ class Publishthis_Publish {
 	 * @param array   $action_meta Publishing Action data
 	 */
 	function publish_feed_with_publishing_action( $feed, $action_meta ) {
-		
 		try{
-
+			
+	
 			$posts_updated = $posts_inserted = $posts_deleted = $posts_skipped = 0;
 
 			$feed_id = $feed['feedId'];
@@ -282,7 +282,6 @@ class Publishthis_Publish {
 	 * @param unknown $content_features     Additional content info
 	 */
 	private function _update_content( $nid, $feed_id, $set_name, $docid, $arrPostCategoryNames, $curated_content, $content_features ) {
-		$metadata_json =  json_encode($curated_content); 
 		$body_text = '';
 
 		//if don't add new node
@@ -318,6 +317,7 @@ class Publishthis_Publish {
 					return "skipped";
 				}
 			}
+
 		}		
 		
 		$node->type = $content_features['content_type'];
@@ -387,13 +387,18 @@ class Publishthis_Publish {
 
 			$this->obj_render->pt_content = $content;
 			$this->obj_render->pt_content_features = $content_features;
-			$body_text = $this->obj_render->render_content( $content_features['format_type'] );
-
+    		$body_text = $this->obj_render->render_content( $content_features['format_type'] );
 			$node->body[$node->language][0]['value']   = $body_text;
 			$node->body[$node->language][0]['summary'] = $this->_build_node_summary($content);
+			
 		}
 
-		$node->body[$node->language][0]['format']  = 'full_html';
+/*      if ( $content_features['format_type'] == 'Digest' ) {
+          $node->metadata[$node->language][0]['value'] = '1111';
+		}else{
+          $node->metadata[$node->language][0]['value'] = '1111';
+		}
+      $node->metadata[$node->language][0]['format'] = 'full_html';*/
 
 		//Set content alias on insert
 		if( empty($nid) ) {
@@ -420,13 +425,16 @@ class Publishthis_Publish {
 				$node->field_tags[$node->language][$key]['vid'] = intval($term->vid);
 			}
 		}
-		$node->field_metadata_json[$node->language][0][value] =  $metadata_json;
-		$node->field_metadata_json[$node->language][0]['format']  = 'full_html';
-	
+
 		$node = node_submit($node);
 		node_save($node);
-
-		if( empty( $node->nid ) ) {
+      /* Add ptmetadata to node */
+      $someValue = json_encode($curated_content);
+        db_update('node')
+          ->fields( array( 'ptmetadata' => $someValue ) )
+          ->condition( 'nid', $node->nid, '=')
+          ->execute();
+           if( empty( $node->nid ) ) {
 			$message = array(
 				'message' => 'Post insert/update error',
 				'status' => 'error',
@@ -558,7 +566,7 @@ class Publishthis_Publish {
 	private function _get_featured_image( $contentImageUrl, $content_features ) {
 		$file_name = uniqid() . '_' . basename($contentImageUrl);
 		$ok_override_fimage_size = $content_features['ignore_original_image']['resize_featured_image']==="resize_featured_image" ? "1" : "0";
- 
+
 		//build the url that we would need to download the featured image for
 		switch ( $content_features ['featured_image_size'] ) {
 			case 'custom':
@@ -573,7 +581,7 @@ class Publishthis_Publish {
 				break;
 
 			case 'theme_default':
-			default: 
+			default:
 				$resize_pref = "";
 				break;
 		}
@@ -617,7 +625,6 @@ class Publishthis_Publish {
 	 */
 
 	public function publish_specific_feeds( $arrFeedIds ) {
-		
 		//use these to keep track of what published and what didn't
 		//so we can report it back to the caller in an exception
 		$intDidPublish = 0;
