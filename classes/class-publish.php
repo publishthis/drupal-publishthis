@@ -368,7 +368,8 @@ class Publishthis_Publish {
 			}
 
 			$node->body[$node->language][0]['value']   = $body_text;
-			$node->body[$node->language][0]['summary'] = $this->_build_node_summary($curated_content[0]);
+          $node->body[$node->language][0]['format'] = 'full_html';
+          $node->body[$node->language][0]['summary'] = $this->_build_node_summary($curated_content[0]);
 		}
 		else {
 			$content = $curated_content;
@@ -390,15 +391,8 @@ class Publishthis_Publish {
     		$body_text = $this->obj_render->render_content( $content_features['format_type'] );
 			$node->body[$node->language][0]['value']   = $body_text;
 			$node->body[$node->language][0]['summary'] = $this->_build_node_summary($content);
-			
+          $node->body[$node->language][0]['format'] = 'full_html';
 		}
-
-/*      if ( $content_features['format_type'] == 'Digest' ) {
-          $node->metadata[$node->language][0]['value'] = '1111';
-		}else{
-          $node->metadata[$node->language][0]['value'] = '1111';
-		}
-      $node->metadata[$node->language][0]['format'] = 'full_html';*/
 
 		//Set content alias on insert
 		if( empty($nid) ) {
