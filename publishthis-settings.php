@@ -28,6 +28,7 @@ else {
 //define widgets and shortcodes options
 global $pt_sort_by;
 $pt_sort_by = array(
+  "-1"              => "Default",
   "most_recent"       => "Most Recent",
   "trending_today"    => "Trending Today",
   "trending_pastweek" => "Trending Past Week"

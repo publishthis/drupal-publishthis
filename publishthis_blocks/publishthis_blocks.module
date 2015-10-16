@@ -1,0 +1,113 @@
+<?php
+function publishthis_blocks_block_info(){
+    $blocks['automated_feed'] = array(
+	'info' => t('PublishThis: Automated Feed Content'),
+	'cache' => DRUPAL_NO_CACHE
+    );
+    return $blocks;
+}
+function publishthis_blocks_block_configure($delta = ''){
+    $form = array();
+    $mixes = array();
+    switch ($delta){
+	case 'automated_feed':
+	$form['automated_feed']['published_mixes'] = array(
+		'#type' => 'select',
+		'#title' => t('Published Mixes'),
+		'#options' => $mixes,
+		'#multiple' => false,
+		'#required' => false,
+		'#weight' => -18,
+	);
+    $form['automated_feed']['mix_defaults'] = array(
+        '#type'          => 'checkbox',
+        '#title'         => t('Use Mix Defaults'),
+        '#default_value' =>  '1',
+        '#description'   => t(''),
+      );
+      global $pt_sort_by;
+      $form['automated_feed']['sort_mix'] = array(
+        '#type'          => 'select',
+        '#title'         => t('Sort By:'),
+        '#options'       => $pt_sort_by,
+        '#default_value' =>  variable_get('sort_mix', 'Default'),
+        );
+      global $pt_cache_interval;
+      $form['automated_feed']['cache_interval'] = array(
+        '#type'          => 'select',
+        '#title'         => t('Cache Interval:'),
+        '#options'       => $pt_cache_interval,
+        '#default_value' =>  variable_get('sort_mix', 'Default'),
+      );
+      $form['automated_feed']['remove_duplicates'] = array(
+        '#type'          => 'checkbox',
+        '#title'         => t('Remove Duplicates'),
+        '#default_value' => '1',
+        '#description'   => t(''),
+      );
+      $form['automated_feed']['remove_related'] = array(
+        '#type'          => 'checkbox',
+        '#title'         => t('Remove Related'),
+       '#default_value' =>  '1',
+
+      );
+      global $pt_num_results;
+      $form['automated_feed']['num_results'] = array(
+        '#type'          => 'select',
+        '#title'         => t('Number of Results to Display:'),
+        '#options'       => $pt_num_results,
+        '#prefix'        => '<h3>Layout Options</h3>',
+        '#default_value' =>  variable_get('num_results', 'Default'),
+        '#default_value' => '1',
+      );
+      global $pt_call_options;
+      foreach ( $pt_call_options as $key=>$val ) {
+        $form['automated_feed'][$key] = array(
+          '#type'          => 'checkbox',
+          '#title'         => $val['label'],
+          '#default_value' => $val['value'],
+          '#description'   => t(''),
+
+        );
+      }
+      $form['automated_feed']['show_photos'] = array(
+        '#type'          => 'checkbox',
+        '#title'         => t('Show Photos'),
+        '#default_value' => '1',
+        '#description'   => t(''),
+      );
+      $form['automated_feed']['image_align'] = array(
+        '#type'          => 'select',
+        '#title'         => t('Images Alignment:'),
+        '#options'       =>  array( "left" => "left", "center" => "center", "right" => "right" ),
+        '#default_value' =>  variable_get('image_align', 'left'),
+      );
+
+     break;
+    }
+    
+    return $form;
+}
+
+function publishthis_blocks_block_save($delta = '', $edit = array()) {
+    switch ($delta){
+	case 'automated_feed':
+
+  /* Save block */
+	    break;
+   }
+}
+
+function publishthis_blocks_block_view($delta = ''){
+    $block = array();
+    switch ($delta) {
+	case 'automated_feed':
+    $block['subject'] = t('automated_feed');
+    $objAPI        = new Publishthis_API();
+    $result  = $objAPI->get_feed_content_by_id( '26572', array()); /*Content from PublishThis */
+    $block['content'] = 'publish content';
+    break;
+    }
+    return $block;
+}
+
