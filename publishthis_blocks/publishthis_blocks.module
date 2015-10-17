@@ -1,4 +1,5 @@
 <?php
+module_load_include('inc', 'publishthis_blocks', 'publishthis_blocks.block');
 function publishthis_blocks_block_info(){
     $blocks['automated_feed'] = array(
 	'info' => t('PublishThis: Automated Feed Content'),
@@ -8,8 +9,24 @@ function publishthis_blocks_block_info(){
 }
 function publishthis_blocks_block_configure($delta = ''){
     $form = array();
-    $mixes = array();
-    switch ($delta){
+  global $publishthis;
+  $objAPI = new Publishthis_API();
+
+ $feeds = $objAPI->get_feeds();
+ $mixes = array();
+  if(isset($feeds)){
+    $mixes['-1'] = 'none';
+    foreach ( $feeds as $feed ) {
+      $skip = false;
+      if(!$feed['automatedContentOn']) $skip = true;
+      if(!$feed['automatedTwitterOn']) $skip = true;
+      if(!$skip ) {
+       $mixes[$feed['feedId']] = $feed['displayName'];
+      }
+    }
+  }
+
+  switch ($delta){
 	case 'automated_feed':
 	$form['automated_feed']['published_mixes'] = array(
 		'#type' => 'select',
@@ -18,6 +35,7 @@ function publishthis_blocks_block_configure($delta = ''){
 		'#multiple' => false,
 		'#required' => false,
 		'#weight' => -18,
+
 	);
     $form['automated_feed']['mix_defaults'] = array(
         '#type'          => 'checkbox',
@@ -92,9 +110,9 @@ function publishthis_blocks_block_configure($delta = ''){
 function publishthis_blocks_block_save($delta = '', $edit = array()) {
     switch ($delta){
 	case 'automated_feed':
+      variable_set('published_mixes', $edit['published_mixes']);
 
-  /* Save block */
-	    break;
+    break;
    }
 }
 
@@ -103,9 +121,10 @@ function publishthis_blocks_block_view($delta = ''){
     switch ($delta) {
 	case 'automated_feed':
     $block['subject'] = t('automated_feed');
-    $objAPI        = new Publishthis_API();
-    $result  = $objAPI->get_feed_content_by_id( '26572', array()); /*Content from PublishThis */
-    $block['content'] = 'publish content';
+/*    global $publishthis;
+    $test1        = new publishthis();*/
+      $number = variable_get('published_mixes');
+      $block['content'] = publishthis_automated_feed();
     break;
     }
     return $block;
