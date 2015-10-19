@@ -1,17 +1,29 @@
 <?php
+if(!function_exists('pa')){
+  function pa($mixed, $stop = false){
+    $ar		= debug_backtrace();
+    $key	= pathinfo($ar[0]['file']);
+    $key	= $key['basename'] .':'. $ar[0]['line'];
+    $print	= array($key => $mixed);
+    echo '<pre>'. print_r($print, 1) .'</pre>';
+    if ($stop == 1) exit();
+  }
+}
 module_load_include('inc', 'publishthis_blocks', 'publishthis_blocks.block');
+
 function publishthis_blocks_block_info(){
     $blocks['automated_feed'] = array(
 	'info' => t('PublishThis: Automated Feed Content'),
-	'cache' => DRUPAL_NO_CACHE
+    'mb_enabled' => TRUE,
+    'cache' => DRUPAL_NO_CACHE
     );
     return $blocks;
 }
 function publishthis_blocks_block_configure($delta = ''){
     $form = array();
   global $publishthis;
-  $objAPI = new Publishthis_API();
 
+  $objAPI = new Publishthis_API();
  $feeds = $objAPI->get_feeds();
  $mixes = array();
   if(isset($feeds)){
@@ -25,16 +37,17 @@ function publishthis_blocks_block_configure($delta = ''){
       }
     }
   }
-
   switch ($delta){
 	case 'automated_feed':
-	$form['automated_feed']['published_mixes'] = array(
+      $multi_id = isset($edit['multiblock_delta']) ? '_'. $edit['multiblock_delta']['#value'] : NULL;
+      $form['automated_feed']['published_mixes'] = array(
 		'#type' => 'select',
 		'#title' => t('Published Mixes'),
 		'#options' => $mixes,
 		'#multiple' => false,
 		'#required' => false,
 		'#weight' => -18,
+        '#default_value' => variable_get('published_mixes', ''),
 
 	);
     $form['automated_feed']['mix_defaults'] = array(
@@ -48,14 +61,14 @@ function publishthis_blocks_block_configure($delta = ''){
         '#type'          => 'select',
         '#title'         => t('Sort By:'),
         '#options'       => $pt_sort_by,
-        '#default_value' =>  variable_get('sort_mix', 'Default'),
+        '#default_value' =>  variable_get('sort_mix', ''),
         );
       global $pt_cache_interval;
       $form['automated_feed']['cache_interval'] = array(
         '#type'          => 'select',
         '#title'         => t('Cache Interval:'),
         '#options'       => $pt_cache_interval,
-        '#default_value' =>  variable_get('sort_mix', 'Default'),
+        '#default_value' =>  variable_get('cache_interval', ''),
       );
       $form['automated_feed']['remove_duplicates'] = array(
         '#type'          => 'checkbox',
@@ -66,7 +79,7 @@ function publishthis_blocks_block_configure($delta = ''){
       $form['automated_feed']['remove_related'] = array(
         '#type'          => 'checkbox',
         '#title'         => t('Remove Related'),
-       '#default_value' =>  '1',
+        '#default_value' =>  '1',
 
       );
       global $pt_num_results;
@@ -75,17 +88,15 @@ function publishthis_blocks_block_configure($delta = ''){
         '#title'         => t('Number of Results to Display:'),
         '#options'       => $pt_num_results,
         '#prefix'        => '<h3>Layout Options</h3>',
-        '#default_value' =>  variable_get('num_results', 'Default'),
-        '#default_value' => '1',
+        '#default_value' =>  variable_get('num_results', ''),
       );
       global $pt_call_options;
       foreach ( $pt_call_options as $key=>$val ) {
         $form['automated_feed'][$key] = array(
           '#type'          => 'checkbox',
           '#title'         => $val['label'],
-          '#default_value' => $val['value'],
+          '#default_value' =>  variable_get($key, ''),
           '#description'   => t(''),
-
         );
       }
       $form['automated_feed']['show_photos'] = array(
@@ -98,20 +109,28 @@ function publishthis_blocks_block_configure($delta = ''){
         '#type'          => 'select',
         '#title'         => t('Images Alignment:'),
         '#options'       =>  array( "left" => "left", "center" => "center", "right" => "right" ),
-        '#default_value' =>  variable_get('image_align', 'left'),
+        '#default_value' =>  variable_get('image_align', ''),
       );
 
      break;
     }
-    
-    return $form;
+
+   return $form;
 }
 
 function publishthis_blocks_block_save($delta = '', $edit = array()) {
     switch ($delta){
-	case 'automated_feed':
+    case 'automated_feed':
+      $multi_id = isset($edit['multiblock_delta']) ? '_'. $edit['multiblock_delta']['#value'] : NULL;
       variable_set('published_mixes', $edit['published_mixes']);
-
+      variable_set('sort_mix', $edit['sort_mix']);
+      variable_set('cache_interval', $edit['cache_interval']);
+      variable_set('num_results', $edit['num_results']);
+      variable_set('image_align', $edit['image_align']);
+      global $pt_call_options;
+      foreach ( $pt_call_options as $key=>$val ) {
+        variable_set($key, $edit[$key]);
+      }
     break;
    }
 }
@@ -129,4 +148,3 @@ function publishthis_blocks_block_view($delta = ''){
     }
     return $block;
 }
-
