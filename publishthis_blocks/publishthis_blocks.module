@@ -1,14 +1,4 @@
 <?php
-if(!function_exists('pa')){
-  function pa($mixed, $stop = false){
-    $ar		= debug_backtrace();
-    $key	= pathinfo($ar[0]['file']);
-    $key	= $key['basename'] .':'. $ar[0]['line'];
-    $print	= array($key => $mixed);
-    echo '<pre>'. print_r($print, 1) .'</pre>';
-    if ($stop == 1) exit();
-  }
-}
 module_load_include('inc', 'publishthis_blocks', 'publishthis_blocks.block');
 
 function publishthis_blocks_block_info(){
@@ -20,10 +10,8 @@ function publishthis_blocks_block_info(){
     return $blocks;
 }
 function publishthis_blocks_block_configure($delta = ''){
-    $form = array();
-  global $publishthis;
-
-  $objAPI = new Publishthis_API();
+ $form = array();
+ $objAPI = new Publishthis_API();
  $feeds = $objAPI->get_feeds();
  $mixes = array();
   if(isset($feeds)){
@@ -39,8 +27,7 @@ function publishthis_blocks_block_configure($delta = ''){
   }
   switch ($delta){
 	case 'automated_feed':
-      $multi_id = isset($edit['multiblock_delta']) ? '_'. $edit['multiblock_delta']['#value'] : NULL;
-      $form['automated_feed']['published_mixes'] = array(
+    $form['automated_feed']['published_mixes'] = array(
 		'#type' => 'select',
 		'#title' => t('Published Mixes'),
 		'#options' => $mixes,
@@ -48,7 +35,6 @@ function publishthis_blocks_block_configure($delta = ''){
 		'#required' => false,
 		'#weight' => -18,
         '#default_value' => variable_get('published_mixes', ''),
-
 	);
     $form['automated_feed']['mix_defaults'] = array(
         '#type'          => 'checkbox',
@@ -121,7 +107,6 @@ function publishthis_blocks_block_configure($delta = ''){
 function publishthis_blocks_block_save($delta = '', $edit = array()) {
     switch ($delta){
     case 'automated_feed':
-      $multi_id = isset($edit['multiblock_delta']) ? '_'. $edit['multiblock_delta']['#value'] : NULL;
       variable_set('published_mixes', $edit['published_mixes']);
       variable_set('sort_mix', $edit['sort_mix']);
       variable_set('cache_interval', $edit['cache_interval']);
@@ -140,10 +125,7 @@ function publishthis_blocks_block_view($delta = ''){
     switch ($delta) {
 	case 'automated_feed':
     $block['subject'] = t('automated_feed');
-/*    global $publishthis;
-    $test1        = new publishthis();*/
-      $number = variable_get('published_mixes');
-      $block['content'] = publishthis_automated_feed();
+    $block['content'] = publishthis_automated_feed();
     break;
     }
     return $block;
