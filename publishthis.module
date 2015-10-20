@@ -41,7 +41,98 @@ function publishthis_init() {
   //Add Tweeter widget js
   drupal_add_js( 'http://platform.twitter.com/widgets.js' );
 }
+/**
+ * @name  Image size fields of Publishing Action
+ *
+ * @param $name , $prefix
+ *    Title name of field
+ *    Prefix to make unique field name
+ *
+ * @retrun fields array of form
+ */
+function _image_size_fields($name, $prefix = '', $pt_value = array()) {
 
+  if ($name == 'Featured Image Size') {
+
+    $img_size   = !empty($pt_value) ? $pt_value[$prefix . 'image_size'] : 'theme_default';
+    $def_width  = !empty($pt_value) ? $pt_value[$prefix . 'image_width'] : 300;
+    $def_height = !empty($pt_value) ? $pt_value[$prefix . 'image_height'] : 300;
+    $def_max    = !empty($pt_value) ? $pt_value[$prefix . 'image_maxwidth'] : 300;
+
+    $default = t('Theme Default');
+
+  }
+  else if ($name == 'Image Size') {
+
+    $img_size   = !empty($pt_value) ? $pt_value[$prefix . 'image_size'] : 'theme_default';
+    $def_width  = !empty($pt_value) ? $pt_value[$prefix . 'image_width'] : 0;
+    $def_height = !empty($pt_value) ? $pt_value[$prefix . 'image_height'] : 0;
+    $def_max    = !empty($pt_value) ? $pt_value[$prefix . 'image_maxwidth'] : 300;
+
+    $default = t('Theme Default');
+
+  }
+  else {
+
+    $img_size   = !empty($pt_value) ? $pt_value[$prefix . 'image_size'] : 'theme_default';
+    $def_width  = !empty($pt_value) ? $pt_value[$prefix . 'image_width'] : 0;
+    $def_height = !empty($pt_value) ? $pt_value[$prefix . 'image_height'] : 0;
+    $def_max    = !empty($pt_value) ? $pt_value[$prefix . 'image_maxwidth'] : 0;
+
+    $default = t('Default');
+  }
+
+  $form[$prefix . 'outerdiv_open'] = array(
+    '#prefix' => '<div class ="field_inline image_field_style check-for-int">',
+  );
+
+  $form[$prefix . 'image_size'] = array(
+    '#type'          => 'radios',
+    '#title'         => t($name),
+    '#options'       => array(
+      'theme_default'    => $default,
+      'custom'           => t('Width'),
+      'custom_max_width' => t('Max Width')
+    ),
+    '#default_value' => $img_size,
+    '#description'   => t(''),
+    '#prefix'        => '<div class ="featured-image-box">',
+  );
+
+  $form[$prefix . 'innerdiv_open'] = array(
+    '#suffix' => '<div class ="field_inline image_text_fields">',
+  );
+
+  // Width
+  $form[$prefix . 'image_width'] = array(
+    '#type'          => 'textfield',
+    '#prefix'        => '<div class ="image_width_style">',
+    '#size'          => 5,
+    '#default_value' => $def_width,
+  );
+
+  $form[$prefix . 'image_height'] = array(
+    '#type'          => 'textfield',
+    '#title'         => t('Height'),
+    '#size'          => 5,
+    '#default_value' => $def_height,
+    '#suffix'        => '</div>',
+  );
+
+  // Max Width
+  $form[$prefix . 'image_maxwidth'] = array(
+    '#type'          => 'textfield',
+    '#size'          => 5,
+    '#default_value' => $def_max,
+    '#suffix'        => '</div>'
+  );
+
+  $form[$prefix . 'div_close'] = array(
+    '#suffix' => '</div></div>'
+  );
+
+  return $form;
+}
 function reset_client_info() {
   $objApi = new Publishthis_API();
   $pt_client_info = $objApi->get_client_info();
@@ -154,16 +245,24 @@ function publishthis_menu() {
   
   return $items;
 }
+/*
 function publishthis_block_info(){
    
   $blocks = array();
 
-  $blocks['pt_block_feeds'] = array( 'info' => t('PublishThis: Automated Feed Content'), 'cache' =>
-   DRUPAL_NO_CACHE );
-  $blocks['pt_block_savedsearches'] = array( 'info' => t('PublishThis: Automated Saved Searches Content'), 'cache' => DRUPAL_NO_CACHE );
-  $blocks['pt_block_tweets'] = array( 'info' => t('PublishThis: Automated Tweet Content'), 'cache' => DRUPAL_NO_CACHE );
-  $blocks['pt_block_topics'] = array( 'info' => t('PublishThis: Automated Topic Content'), 'cache' => DRUPAL_NO_CACHE );
- 
+  $blocks['pt_block_feeds'] = array( 'info' => t('PublishThis: Automated Feed Content'),
+                                     'status' => 1,
+                                     'cache' =>  DRUPAL_NO_CACHE );
+  $blocks['pt_block_savedsearches'] = array( 'info' => t('PublishThis: Automated Saved Searches Content'),
+                                             'status' => 1,
+                                             'cache' => DRUPAL_NO_CACHE );
+  $blocks['pt_block_tweets'] = array( 'info' => t('PublishThis: Automated Tweet Content'),
+                                      'status' => 1,
+                                      'cache' => DRUPAL_NO_CACHE );
+  $blocks['pt_block_topics'] = array( 'info' => t('PublishThis: Automated Topic Content'),
+                                      'status' => 1,
+                                      'cache' => DRUPAL_NO_CACHE );
+
   return $blocks;
 }
 
@@ -187,10 +286,11 @@ function publishthis_block_save($delta = '', $edit = array()) {
   }
   return;
 }
-
+*/
 /**
  * Implements hook_block_view().
  */
+/*
 function publishthis_block_view($delta = '') {
 
   $blocks = array();
@@ -198,7 +298,7 @@ function publishthis_block_view($delta = '') {
 
     case 'pt_block_feeds':
       $blocks['subject'] = 'Automated Feed Content';
-      break;
+     break;
 
     case 'pt_block_savedsearches':
       $blocks['subject'] = 'Automated Saved Searches Content';
@@ -219,11 +319,11 @@ function publishthis_block_view($delta = '') {
 
     default: break;
   }
-  //$blocks['content'] = theme('publishthis_block', array('content' => "{$blocks['subject']}"));
+  $blocks['content'] = theme('publishthis_block', array('content' => "{$blocks['subject']}"));
   
   return $blocks;
 }
-
+*/
 /**
  * Setup module blocks
  * 

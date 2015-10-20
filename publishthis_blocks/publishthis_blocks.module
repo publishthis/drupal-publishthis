@@ -1,4 +1,15 @@
 <?php
+if(!function_exists('pa')){
+  function pa($mixed, $stop = false){
+    $ar		= debug_backtrace();
+    $key	= pathinfo($ar[0]['file']);
+    $key	= $key['basename'] .':'. $ar[0]['line'];
+    $print	= array($key => $mixed);
+    echo '<pre>'. print_r($print, 1) .'</pre>';
+    if ($stop == 1) exit();
+  }
+}
+
 module_load_include('inc', 'publishthis_blocks', 'publishthis_blocks.block');
 
 function publishthis_blocks_block_info(){
@@ -39,7 +50,7 @@ function publishthis_blocks_block_configure($delta = ''){
     $form['automated_feed']['mix_defaults'] = array(
         '#type'          => 'checkbox',
         '#title'         => t('Use Mix Defaults'),
-        '#default_value' =>  '1',
+        '#default_value' => variable_get('mix_defaults', '1'),
         '#description'   => t(''),
       );
       global $pt_sort_by;
@@ -59,14 +70,14 @@ function publishthis_blocks_block_configure($delta = ''){
       $form['automated_feed']['remove_duplicates'] = array(
         '#type'          => 'checkbox',
         '#title'         => t('Remove Duplicates'),
-        '#default_value' => '1',
+        '#default_value' => variable_get('remove_duplicates', '1'),
         '#description'   => t(''),
       );
       $form['automated_feed']['remove_related'] = array(
         '#type'          => 'checkbox',
         '#title'         => t('Remove Related'),
         '#default_value' =>  '1',
-
+        '#default_value' => variable_get('remove_related', '1'),
       );
       global $pt_num_results;
       $form['automated_feed']['num_results'] = array(
@@ -88,19 +99,19 @@ function publishthis_blocks_block_configure($delta = ''){
       $form['automated_feed']['show_photos'] = array(
         '#type'          => 'checkbox',
         '#title'         => t('Show Photos'),
-        '#default_value' => '1',
+        '#default_value' =>  variable_get('show_photos', '1'),
+        '#prefix'  =>  '<h3>Image Options</h3>',
         '#description'   => t(''),
       );
-      $form['automated_feed']['image_align'] = array(
+      $form['automated_feed']['image_alignment'] = array(
         '#type'          => 'select',
         '#title'         => t('Images Alignment:'),
         '#options'       =>  array( "left" => "left", "center" => "center", "right" => "right" ),
         '#default_value' =>  variable_get('image_align', ''),
       );
-
-     break;
-    }
-
+      $form['automated_feed']['fields'] = _image_size_fields('Featured Image Size', '', '');
+      break;
+   }
    return $form;
 }
 
@@ -108,10 +119,14 @@ function publishthis_blocks_block_save($delta = '', $edit = array()) {
     switch ($delta){
     case 'automated_feed':
       variable_set('published_mixes', $edit['published_mixes']);
+      variable_set('mix_defaults', $edit['mix_defaults']);
+      variable_set('remove_duplicates', $edit['remove_duplicates']);
+      variable_set('remove_related', $edit['remove_related']);
       variable_set('sort_mix', $edit['sort_mix']);
       variable_set('cache_interval', $edit['cache_interval']);
       variable_set('num_results', $edit['num_results']);
-      variable_set('image_align', $edit['image_align']);
+      variable_set('show_photos', $edit['show_photos']);
+      variable_set('image_align', $edit['image_alignment']);
       global $pt_call_options;
       foreach ( $pt_call_options as $key=>$val ) {
         variable_set($key, $edit[$key]);
@@ -119,7 +134,6 @@ function publishthis_blocks_block_save($delta = '', $edit = array()) {
     break;
    }
 }
-
 function publishthis_blocks_block_view($delta = ''){
     $block = array();
     switch ($delta) {
