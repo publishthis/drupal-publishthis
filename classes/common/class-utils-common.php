@@ -537,7 +537,8 @@ abstract class Publishthis_Utils_Common {
 			}else {
 				//remove the end &
 				$hashTracking = rtrim( $hashTracking, "&" );
-				return $url . "#ptlink." . $hashTracking;
+	//			return $url . "#ptlink." . $hashTracking; /* Update the HTML generation. */
+				return $url;
 			}
 
 		}
