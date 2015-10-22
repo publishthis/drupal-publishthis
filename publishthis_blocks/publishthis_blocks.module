@@ -161,6 +161,45 @@ function publishthis_blocks_block_configure($delta = ''){
       );
 
       break;
+    case 'automated_tweets':
+      $form['automated_tweets']['published_mixes_tweets'] = array(
+        '#type' => 'select',
+        '#title' => t('Published Mixes'),
+        '#options' => $mixes,
+        '#multiple' => false,
+        '#required' => false,
+        '#weight' => -18,
+        '#default_value' => variable_get('published_mixes_tweets', ''),
+      );
+      $form['automated_tweets']['mix_defaults_tweets'] = array(
+        '#type'          => 'checkbox',
+        '#title'         => t('Use Mix Defaults'),
+        '#default_value' => variable_get('mix_defaults_tweets', '1'),
+        '#description'   => t(''),
+      );
+      global $pt_sort_by;
+      $form['automated_tweets']['sort_mix_tweets'] = array(
+        '#type'          => 'select',
+        '#title'         => t('Sort By:'),
+        '#options'       => $pt_sort_by,
+        '#default_value' =>  variable_get('sort_mix_tweets', ''),
+      );
+      global $pt_cache_interval;
+      $form['automated_tweets']['cache_interval_tweets'] = array(
+        '#type'          => 'select',
+        '#title'         => t('Cache Interval:'),
+        '#options'       => $pt_cache_interval,
+        '#default_value' =>  variable_get('cache_interval_tweets', ''),
+      );
+      global $pt_num_results;
+      $form['automated_tweets']['num_results_tweets'] = array(
+        '#type'          => 'select',
+        '#title'         => t('Number of Results to Display:'),
+        '#options'       => $pt_num_results,
+        '#prefix'        => '<h3>Layout Options</h3>',
+        '#default_value' =>  variable_get('num_results_tweets', ''),
+      );
+    break;
    }
    return $form;
 }
@@ -187,7 +226,11 @@ function publishthis_blocks_block_save($delta = '', $edit = array()) {
     }
     break;
     case 'automated_tweets':
-
+      variable_set('published_mixes_tweets', $edit['published_mixes_tweets']);
+      variable_set('mix_defaults_tweets', $edit['mix_defaults_tweets']);
+      variable_set('sort_mix_tweets', $edit['sort_mix_tweets']);
+      variable_set('cache_interval_tweets', $edit['cache_interval_tweets']);
+      variable_set('num_results_tweets', $edit['num_results_tweets']);
      break;
    }
 }
