@@ -1,4 +1,5 @@
 <?php
+/* Development function */
 if(!function_exists('pa')){
   function pa($mixed, $stop = false){
     $ar		= debug_backtrace();
@@ -18,6 +19,11 @@ function publishthis_blocks_block_info(){
     'mb_enabled' => TRUE,
     'cache' => DRUPAL_NO_CACHE
     );
+    $blocks['automated_tweets'] = array(
+    'info' => t('PublishThis: Automated Tweet Content'),
+    'mb_enabled' => TRUE,
+    'cache' => DRUPAL_NO_CACHE
+  );
     return $blocks;
 }
 function publishthis_blocks_block_configure($delta = ''){
@@ -109,7 +115,51 @@ function publishthis_blocks_block_configure($delta = ''){
         '#options'       =>  array( "left" => "left", "center" => "center", "right" => "right" ),
         '#default_value' =>  variable_get('image_align', ''),
       );
-      $form['automated_feed']['fields'] = _image_size_fields('Featured Image Size', '', '');
+      $form['automated_feed']['outerdiv_open'] = array(
+        '#prefix' => '<div class ="field_inline image_field_style check-for-int">',
+      );
+
+      $form['automated_feed']['image_size'] = array(
+        '#type'          => 'radios',
+        '#title'         => t('Theme default'),
+        '#options'       => array(
+          'theme_default'    => 'Theme default',
+          'custom'           => t('Width'),
+          'custom_max_width' => t('Max Width')
+        ),
+        '#default_value' => variable_get('image_size', 'Theme default'),
+        '#description'   => t(''),
+        '#prefix'        => '<div class ="featured-image-box">',
+      );
+      $form['automated_feed']['innerdiv_open'] = array(
+        '#suffix' => '<div class ="field_inline image_text_fields">',
+      );
+     // Width
+      $form['automated_feed']['image_width'] = array(
+        '#type'          => 'textfield',
+        '#prefix'        => '<div class ="image_width_style">',
+        '#size'          => 5,
+        '#default_value' => variable_get('image_width', '0'),
+      );
+
+      $form['automated_feed']['image_height'] = array(
+        '#type'          => 'textfield',
+        '#title'         => t('Height'),
+        '#size'          => 5,
+        '#default_value' => variable_get('image_height', '0'),
+        '#suffix'        => '</div>',
+      );
+      // Max Width
+      $form['automated_feed']['image_maxwidth'] = array(
+        '#type'          => 'textfield',
+        '#size'          => 5,
+        '#default_value' => variable_get('image_maxwidth', '300'),
+        '#suffix'        => '</div>'
+      );
+      $form['automated_feed']['div_close'] = array(
+        '#suffix' => '</div></div>'
+      );
+
       break;
    }
    return $form;
@@ -127,20 +177,31 @@ function publishthis_blocks_block_save($delta = '', $edit = array()) {
       variable_set('num_results', $edit['num_results']);
       variable_set('show_photos', $edit['show_photos']);
       variable_set('image_align', $edit['image_alignment']);
+      variable_set('image_size', $edit['image_size']);
+      variable_set('image_width', $edit['image_width']);
+      variable_set('image_height', $edit['image_height']);
+      variable_set('image_maxwidth', $edit['image_maxwidth']);
       global $pt_call_options;
       foreach ( $pt_call_options as $key=>$val ) {
         variable_set($key, $edit[$key]);
-      }
+    }
     break;
+    case 'automated_tweets':
+
+     break;
    }
 }
 function publishthis_blocks_block_view($delta = ''){
     $block = array();
     switch ($delta) {
 	case 'automated_feed':
-    $block['subject'] = t('automated_feed');
-    $block['content'] = publishthis_automated_feed();
+      $block['subject'] = t('automated_feed');
+      $block['content'] = publishthis_automated_feed();
     break;
+      case 'automated_tweets':
+        $block['subject'] = t('automated_tweets');
+        $block['content'] = publishthis_automated_tweets();
+        break;
     }
     return $block;
 }

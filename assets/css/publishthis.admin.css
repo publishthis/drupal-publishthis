@@ -165,7 +165,7 @@ fieldset.horizontal-list div.form-item.form-type-select>label { float: left; wid
 .pt-annotation-title-v-middle { vertical-align: middle; }
 .pt-annotation-title-v-bottom { vertical-align: bottom; }
 
-.aligncenter { text-align: center; margin: auto; margin-left: auto; }
+.aligncenter { text-align: center; margin: auto; margin-left: auto; display: block; }
 .alignright { text-align: right; margin: auto; margin-left: auto; float: right;}
 .alignleft { text-align: left; margin: auto; margin-left: auto; float: left; }
 
