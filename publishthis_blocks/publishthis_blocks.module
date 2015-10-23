@@ -238,11 +238,11 @@ function publishthis_blocks_block_view($delta = ''){
     $block = array();
     switch ($delta) {
 	case 'automated_feed':
-      $block['subject'] = t('automated_feed');
+      $block['subject'] = t('Automated Feed Content - PublishThis');
       $block['content'] = publishthis_automated_feed();
     break;
       case 'automated_tweets':
-        $block['subject'] = t('automated_tweets');
+        $block['subject'] = t('Automated Tweet Content - PublishThis');
         $block['content'] = publishthis_automated_tweets();
         break;
     }

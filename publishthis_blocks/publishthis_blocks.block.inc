@@ -23,7 +23,6 @@ function publishthis_automated_feed(){
     'image_size'         => variable_get('image_size'),
     'image_align'        => variable_get('image_align'),
     'ok_resize_previews' => variable_get('ok_resize_previews'),
-    'image_size'         => variable_get('image_size'),
     'image_width'        => variable_get('image_width'),
     'image_height'       => variable_get('image_height'),
     'image_maxwidth'     => variable_get('image_maxwidth'),
@@ -74,6 +73,17 @@ function publishthis_automated_feed(){
 return $html;
 }
 function publishthis_automated_tweets(){
- $html ='publishthis_automated_tweets content';
- return $html;
+  $published_mixes = variable_get('published_mixes');
+  $objAPI        = new Publishthis_API();
+  $pt_num_results = variable_get('num_results');
+  $params['results'] = $pt_num_results;
+  $pt_items  = $objAPI->get_tweets_by_feed_id( $published_mixes , $params);
+  $html ='';
+  if($pt_items){
+    foreach($pt_items as $pt_item) {
+      $html .= '<blockquote class="twitter-tweet" ><p>' . $pt_item->statusText . '</p>
+      &mdash; Twitter  (@' . $pt_item->userScreenName . ') <a href="' . $pt_item->statusUrl . '" data-datetime="' . $pt_item->publishDate . '" >' . $pt_item->publishDate . '</a></blockquote>';
+    }
+  }
+  return $html;
 }
