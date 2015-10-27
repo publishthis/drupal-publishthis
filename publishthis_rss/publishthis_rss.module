@@ -1,0 +1,101 @@
+<?php
+/* Development function */
+if(!function_exists('pa')){
+  function pa($mixed, $stop = false){
+    $ar		= debug_backtrace();
+    $key	= pathinfo($ar[0]['file']);
+    $key	= $key['basename'] .':'. $ar[0]['line'];
+    $print	= array($key => $mixed);
+    echo '<pre>'. print_r($print, 1) .'</pre>';
+    if ($stop == 1) exit();
+  }
+}
+function publishthis_rss_menu() {
+  $items = array();
+  $items[] = array(
+    'path' => 'ptrss.xml',
+    'page callback' => 'publishthis_rss_display_rss',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK);
+    $items['admin/config/system/publishthis-rss'] = array(
+    'title' => 'PublishThis RSS',
+    'description' => 'Configure PublishThis RSS',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('publishthis_rss_settings'),
+    'access callback' => TRUE,
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'publishthis_rss.admin.settings.inc',
+    'file path' => drupal_get_path('module', 'publishthis_rss') . '/admin'
+  );
+  return $items;
+}
+
+function publishthis_rss_display_rss() {
+  //drupal_add_http_header('Content-Type', 'text/xml; utf-8');
+  global $base_url;
+  global $language;
+  $site_name = variable_get('site_name');
+  $num_results = variable_get('published_rss_num_results');
+  $pt_post_link = variable_get('published_rss_pt_post');
+  $pt_taxonomy = variable_get('published_rss_taxonomy');
+  if(empty($pt_taxonomy)){
+    $nodes_query = db_select('node', 'n');
+    $nodes_query->leftJoin('field_data_body', 'fdb', 'n.nid = fdb.entity_id');
+    $nodes_query->leftJoin('taxonomy_index', 'ti', 'n.nid = ti.nid');
+    $nodes_query->leftJoin('users', 'u', 'n.uid = u.uid');
+    $nodes_query->groupBy('n.nid');
+    $nodes_query->fields('n');
+    $nodes_query->fields('ti');
+    $nodes_query->fields('u', array('name'));
+    $nodes_query->fields('fdb')
+         ->orderBy('n.created', 'DESC')
+         ->range(0, $num_results);
+  } else{
+    $nodes_query = db_select('node', 'n');
+    $nodes_query->leftJoin('field_data_body', 'fdb', 'n.nid = fdb.entity_id');
+    $nodes_query->leftJoin('taxonomy_index', 'ti', 'n.nid = ti.nid');
+    $nodes_query->leftJoin('users', 'u', 'n.uid = u.uid');
+    $nodes_query->groupBy('n.nid');
+    $nodes_query->fields('n');
+    $nodes_query->fields('ti');
+    $nodes_query->fields('u', array('name'));
+    $nodes_query->fields('fdb')
+                ->condition('ti.tid', $pt_taxonomy, 'IN')
+                ->orderBy('n.created', 'DESC')
+                ->range(0, $num_results);
+ }
+
+  $node_ids = $nodes_query->execute();
+  $html = '';
+  $html .= '<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xml:base="'. $base_url .'"  xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+<title>'. $site_name .'</title>
+<link>'. $base_url .'</link>
+<language>'. $language->language .'</language>';
+ foreach($node_ids as $item){
+    $nodeurl = url('node/'. $item->nid);
+  if( $pt_post_link == '1'){
+  if(isset($item->ptmetadata)){
+    $pt_metadata = json_decode($item->ptmetadata);
+    $url_link =  $pt_metadata->url;
+  }else{
+    $url_link = ''. $base_url . ''. $nodeurl .'';
+  }
+}else{
+  $url_link = ''. $base_url . ''. $nodeurl .'';
+}
+    $html .='
+    <item>
+    <title><![CDATA[ '. $item->title .']]></title>
+    <link>'. $url_link .'</link>
+    <description><![CDATA['. $item->body_summary .']]></description>
+    <pubDate>'. $item->created .'</pubDate>
+    <dc:creator>'. $item->name .'</dc:creator>
+    <guid isPermaLink="false">'. $url_link .'</guid>
+    </item>';
+  }
+  $html .='</channel></rss>';
+  print $html;
+}
+
