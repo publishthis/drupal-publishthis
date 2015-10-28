@@ -1,15 +1,8 @@
 <?php
-/* Development function */
-if(!function_exists('pa')){
-  function pa($mixed, $stop = false){
-    $ar		= debug_backtrace();
-    $key	= pathinfo($ar[0]['file']);
-    $key	= $key['basename'] .':'. $ar[0]['line'];
-    $print	= array($key => $mixed);
-    echo '<pre>'. print_r($print, 1) .'</pre>';
-    if ($stop == 1) exit();
-  }
-}
+/**
+ * Publishthis rss menu items
+ * Implementation of hook_menu
+ */
 function publishthis_rss_menu() {
   $items = array();
   $items[] = array(
@@ -17,6 +10,7 @@ function publishthis_rss_menu() {
     'page callback' => 'publishthis_rss_display_rss',
     'access callback' => TRUE,
     'type' => MENU_CALLBACK);
+
     $items['admin/config/system/publishthis-rss'] = array(
     'title' => 'PublishThis RSS',
     'description' => 'Configure PublishThis RSS',
@@ -30,8 +24,11 @@ function publishthis_rss_menu() {
   return $items;
 }
 
+/**
+ * Returns xml for the ptrss.xml
+ */
 function publishthis_rss_display_rss() {
-  //drupal_add_http_header('Content-Type', 'text/xml; utf-8');
+  drupal_add_http_header('Content-Type', 'text/xml; utf-8');
   global $base_url;
   global $language;
   $site_name = variable_get('site_name');
@@ -64,7 +61,6 @@ function publishthis_rss_display_rss() {
                 ->orderBy('n.created', 'DESC')
                 ->range(0, $num_results);
  }
-
   $node_ids = $nodes_query->execute();
   $html = '';
   $html .= '<?xml version="1.0" encoding="utf-8"?>
@@ -75,16 +71,12 @@ function publishthis_rss_display_rss() {
 <language>'. $language->language .'</language>';
  foreach($node_ids as $item){
     $nodeurl = url('node/'. $item->nid);
-  if( $pt_post_link == '1'){
-  if(isset($item->ptmetadata)){
-    $pt_metadata = json_decode($item->ptmetadata);
-    $url_link =  $pt_metadata->url;
+  if( $pt_post_link == '1' && isset($item->ptmetadata) ){
+  $pt_metadata = json_decode($item->ptmetadata);
+  $url_link =  $pt_metadata->url;
   }else{
-    $url_link = ''. $base_url . ''. $nodeurl .'';
-  }
-}else{
   $url_link = ''. $base_url . ''. $nodeurl .'';
-}
+  }
     $html .='
     <item>
     <title><![CDATA[ '. $item->title .']]></title>
