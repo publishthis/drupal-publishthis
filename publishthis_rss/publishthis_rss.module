@@ -11,29 +11,82 @@ function publishthis_rss_menu() {
     'access callback' => TRUE,
     'type' => MENU_CALLBACK);
 
-    $items['admin/config/system/publishthis-rss'] = array(
+  $result = db_select('pt_rssfeed', 'pb')
+    ->fields('pb', array())
+    ->extend('PagerDefault')
+    ->extend('TableSort')
+    ->execute();
+    $rows = array();
+    foreach ($result as $row) {
+      $items['rss_feeds/'. $row->title .'.xml' ] = array(
+        'page callback' => 'publishthis_rss_display_rss',
+        'access callback' => TRUE,
+        'page arguments' => array($row),
+        'type' => MENU_NORMAL_ITEM );
+     }
+   $items['admin/config/system/publishthis-rss-feed'] = array(
     'title' => 'PublishThis RSS',
-    'description' => 'Configure PublishThis RSS',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('publishthis_rss_settings'),
-    'access callback' => TRUE,
+    'description' => 'PublishThis RSS feed',
     'type' => MENU_NORMAL_ITEM,
-    'file' => 'publishthis_rss.admin.settings.inc',
+    'weight' => 10,
+    'access callback' => TRUE,
+    'page callback' => array('publishthis_rss_publishingactions'),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'publishthis_rss.admin.publishingactions.inc',
     'file path' => drupal_get_path('module', 'publishthis_rss') . '/admin'
   );
+  $items['admin/config/system/publishthis-rss/publishing-editactions/%'] = array(
+    'title' => 'Publishing Actions',
+    'type' => MENU_CALLBACK,
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('edit_publishthis_rss_publishing_actions'),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'publishthis_rss.admin.publishingactions.inc',
+    'file path' => drupal_get_path('module', 'publishthis_rss') . '/admin'
+  );
+  $items['admin/config/system/publishthis-rss/publishing-addactions'] = array(
+    'title' => 'PublishThis',
+    'type' => MENU_LOCAL_TASK,
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('publishthis_rss_addnew_publishingactions'),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'publishthis_rss.admin.publishingactions.inc',
+    'file path' => drupal_get_path('module', 'publishthis_rss') . '/admin'
+  );
+  $items['publishthis-rss/publishing-actions/delete/%'] = array(
+    'title' => 'RSS feed Delete',
+    'type' => MENU_CALLBACK,
+    'page callback' => 'delete_publishthis_rss_publishing_actions',
+    'access arguments' => array('administer site configuration'),
+    'file' => 'publishthis_rss.admin.publishingactions.inc',
+    'file path' => drupal_get_path('module', 'publishthis_rss') . '/admin'
+  );
+  /*  $items['admin/config/system/publishthis-rss'] = array(
+      'title' => 'PublishThis RSS',
+      'page callback' => array('publishthis_rss_publishingactions'),
+      'access arguments' => array('administer site configuration'),
+      'file' => 'publishthis_rss.admin.settings.inc',
+      'file path' => drupal_get_path('module', 'publishthis_rss') . '/admin'
+    );
+
+
+
+  */
+
+
   return $items;
 }
 
 /**
  * Returns xml for the ptrss.xml
  */
-function publishthis_rss_display_rss() {
+function publishthis_rss_display_rss($feed) {
   drupal_add_http_header('Content-Type', 'text/xml; utf-8');
   global $base_url;
   global $language;
   $site_name = variable_get('site_name');
-  $num_results = variable_get('published_rss_num_results');
-  $pt_post_link = variable_get('published_rss_pt_post');
+  $num_results = $feed->number_results;
+  $pt_post_link = $feed->pt_postlink;
   $pt_taxonomy = variable_get('published_rss_taxonomy');
   if(empty($pt_taxonomy)){
     $nodes_query = db_select('node', 'n');
@@ -70,8 +123,8 @@ function publishthis_rss_display_rss() {
 <link>'. $base_url .'</link>
 <language>'. $language->language .'</language>';
  foreach($node_ids as $item){
-    $nodeurl = url('node/'. $item->nid);
-  if( $pt_post_link == '1' && isset($item->ptmetadata) ){
+  $nodeurl = url('node/'. $item->nid);
+  if( $pt_post_link == '1' && !empty($item->ptmetadata) ){
   $pt_metadata = json_decode($item->ptmetadata);
   $url_link =  $pt_metadata->url;
   }else{
