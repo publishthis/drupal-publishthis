@@ -184,18 +184,23 @@ class Publishthis_Publish {
 			$arrPostCategoryNames = array();
 
 			$result_list = $this->obj_api->get_custom_data_by_feed_id ( $feed_id, array () );
+			
 			$custom_data = $managerCategories = array();
 			$action_meta['ptauthors'] = null;
+			$action_meta['pttags'] = null;
 			foreach ( $result_list as $result ) {
 				if( strtoupper( $result->type ) != 'CMS' && isset($result->value) && !empty($result->value) ) {
 					$custom_data[$result->shortCode] = $result->value;
-
+						
 					if ( !in_array( $result->shortCode, array( 'ptauthors', 'ptcategories', 'pttags' ) ) ) {
 						$managerCategories[] = $result->value;
+						
 					}
 				}				
 			}
-					
+			$action_meta['ptauthors'] = $custom_data['ptauthors'];
+			$action_meta['ptcategories'] = $custom_data['ptcategories'];
+			$action_meta['pttags'] = $custom_data['pttags'];
 			// Categorize
 			// map categories from custom data in a Feed to categories in wordpress
 			if ( !empty($action_meta['action_category']) ) {
@@ -283,7 +288,6 @@ class Publishthis_Publish {
 	 */
 	private function _update_content( $nid, $feed_id, $set_name, $docid, $arrPostCategoryNames, $curated_content, $content_features ) {
 		$body_text = '';
-
 		//if don't add new node
 		if( $content_features['ind_add_posts']=='0' && empty($nid) && $content_features['format_type'] == 'Individual' ) return;
 
@@ -327,7 +331,6 @@ class Publishthis_Publish {
 		$node->status = $content_features['content_status'];
 		$node->language = LANGUAGE_NONE;
 		$node->is_new = empty($nid) ? TRUE : FALSE;
-
 		if ( $content_features['format_type'] == 'Digest' ) {
 			$node->title = !empty( $content_features['digest_title'] ) ? $content_features['digest_title'] : NODE_NO_TITLE	;
 
@@ -368,8 +371,8 @@ class Publishthis_Publish {
 			}
 
 		$node->body[$node->language][0]['value']   = $body_text;
-        $node->body[$node->language][0]['format'] = 'full_html';
-        $node->body[$node->language][0]['summary'] = $this->_build_node_summary($curated_content[0]);
+		$node->body[$node->language][0]['format'] = 'full_html';
+		$node->body[$node->language][0]['summary'] = $this->_build_node_summary($curated_content[0]);
 		}
 		else {
 			$content = $curated_content;
@@ -419,12 +422,27 @@ class Publishthis_Publish {
 				$node->field_tags[$node->language][$key]['vid'] = intval($term->vid);
 			}
 		}
-
+		$tags = array();
+		$tags = $content_features['pttags'];
+		$cats = $content_features['ptcategories'];
+		$tid = array();
+		if(!empty($tags)){
+		foreach($tags as $tag){
+		$tid = _get_tid_from_term_name($tag->displayName, 'tags');
+		$node->field_tags[$node->language][] = array('tid' =>  $tid);
+		}
+		}
+		/*	if(!empty($cats)){
+		foreach($cats as $cat){
+		$tid = _get_tid_from_term_name($cat->categoryName, $cat->taxonomyName);
+		 $node->field_products[$node->language][] = array('tid' =>  $tid);
+		}
+		}*/
 		$node = node_submit($node);
 		node_save($node);
-      /* Add ptmetadata to node */
-      $someValue = json_encode($curated_content);
-        db_update('node')
+	  /* Add ptmetadata to node */
+	  $someValue = json_encode($curated_content);
+	    db_update('node')
           ->fields( array( 'ptmetadata' => $someValue ) )
           ->condition( 'nid', $node->nid, '=')
           ->execute();

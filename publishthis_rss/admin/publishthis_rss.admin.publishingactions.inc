@@ -24,6 +24,17 @@ function publishthis_rss_publishingactions() {
   $rows = array();
   foreach ($result as $row) {
 
+   $taxs = json_decode($row->taxonomy_json);
+  if(empty($taxs)){
+    $tax_content = 'All';
+  }else{
+    $tax_content = '';
+    foreach ($taxs as $key=>$tax){
+      $term = taxonomy_term_load($tax);
+      $tax_content .= ''. $key .': '. $term->name .'<br />';
+  }
+  }
+
  	$title = l($row->title, 'rss_feeds/' . $row->title .'.xml' , array('attributes' => array('title' => t('Edit Actions'))));
 
 	$edit   = l(t('Edit'), 'admin/config/system/publishthis-rss/publishing-editactions/' . $row->id, array('attributes' => array('title' => t('Edit Actions'))));
@@ -33,7 +44,7 @@ function publishthis_rss_publishingactions() {
 
 	$rows[] = array(
 	  $title,
-	  $row->taxonomy_json,
+      $tax_content,
       $row->number_results,
 	  $action,
 	);

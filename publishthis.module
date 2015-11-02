@@ -17,6 +17,9 @@ function publishthis_init() {
   else {
     $pt_client_info = reset_client_info();
   }
+  // Create a taxonomy field and use the taxonomy entity we created earlier
+ // Add the field to the content type as a HTML select box.
+
 
   // Include common settings file
   include drupal_get_path('module', 'publishthis') . '/publishthis-settings.php';
@@ -40,6 +43,27 @@ function publishthis_init() {
 
   //Add Tweeter widget js
   drupal_add_js( 'http://platform.twitter.com/widgets.js' );
+}
+/**
+ * Get tid from term name
+ *
+ * @retrun tid taxonomy
+ */
+function _get_tid_from_term_name($term_name, $vocabulary) {
+  $arr_terms = taxonomy_get_term_by_name($term_name, $vocabulary);
+  if (!empty($arr_terms)) {
+    $arr_terms = array_values($arr_terms);
+    $tid = $arr_terms[0]->tid;
+  }
+  else {
+    $vobj = taxonomy_vocabulary_machine_name_load($vocabulary);
+    $term = new stdClass();
+    $term->name = $term_name;
+    $term->vid = $vobj->vid;
+    taxonomy_term_save($term);
+    $tid = $term->tid;
+  }
+  return $tid;
 }
 /**
  * @name  Image size fields of Publishing Action
@@ -149,7 +173,7 @@ function reset_client_info() {
 function publishthis_menu() {
 
   $items = array();
-  
+
   $items['admin/config/system/publishthis/settings'] = array(
     'title' => 'Settings',
     'type' => MENU_DEFAULT_LOCAL_TASK,
