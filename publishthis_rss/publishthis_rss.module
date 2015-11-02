@@ -87,7 +87,7 @@ function publishthis_rss_display_rss($feed) {
   $site_name = variable_get('site_name');
   $num_results = $feed->number_results;
   $pt_post_link = $feed->pt_postlink;
-  $pt_taxonomy = variable_get('published_rss_taxonomy');
+  $pt_taxonomy = json_decode($feed->taxonomy_json);
   if(empty($pt_taxonomy)){
     $nodes_query = db_select('node', 'n');
     $nodes_query->leftJoin('field_data_body', 'fdb', 'n.nid = fdb.entity_id');

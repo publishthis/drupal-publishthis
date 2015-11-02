@@ -79,12 +79,12 @@ function publishthis_rss_addnew_publishingactions($form, &$form_state) {
 	  ->condition('id', $edit_id, '=')
 	  ->execute()
 	  ->fetchAssoc();
+
 	// Unserialize saved form values
-	if (!empty($result['value'])) {
+	if (!empty($result['id'])) {
 	  // True, get form fields value
 	  $edit_id  = $result['id'];
-	  $pt_value = unserialize($result['value']);
-
+	  $pt_value = $result;
     }
 	else {
 	  // False, initialize with empty array
@@ -107,14 +107,13 @@ function publishthis_rss_addnew_publishingactions($form, &$form_state) {
   $form['header_sublink'] = array(
 	'#markup' => '<ul><li>' . l('RSS feed', 'admin/config/system/publishthis-rss-feed') . '</li></ul>'
   );
-
   $form['action_title'] = array(
 	'#type'          => 'textfield',
 	'#title'         => t('Title'),
 	'#attributes'    => array('placeholder' => t('Enter title here')),
 	'#required'      => TRUE,
 	'#size'          => 80,
-	'#default_value' => isset($pt_value['action_title']) ? $pt_value['action_title'] : '',
+	'#default_value' => isset($pt_value['title']) ? $pt_value['title'] : '',
   );
   $form['editId'] = array(
 	'#type'          => 'hidden',
@@ -125,9 +124,10 @@ function publishthis_rss_addnew_publishingactions($form, &$form_state) {
     '#type'          => 'select',
     '#title'         => t('Number of Results to Display:'),
     '#options'       => $pt_num_results,
-    '#default_value' =>  variable_get('published_rss_num_results', '5'),
+    '#default_value' => isset($pt_value['number_results']) ? $pt_value['number_results'] : '5',
   );
-  $vocabularies  = taxonomy_get_vocabularies();
+
+ $vocabularies  = taxonomy_get_vocabularies();
   foreach ($vocabularies as $vocabularie) {
     $vocab = array();
     $tax_id = $vocabularie->vid;
@@ -137,19 +137,36 @@ function publishthis_rss_addnew_publishingactions($form, &$form_state) {
     foreach ($terms as $term) {
       $vocab[$term->tid] = $term->name;
     }
-    $form['pt_settings_rss']['taxonomy_'.  $vocabularie_name] = array(
-      '#type'          => 'select',
-      '#title'         => t( $vocabularie_name),
-      '#options'       => $vocab,
-      '#default_value' =>  variable_get('published_mixes_rss_'. $vocabularie_name , 'all'),
-      '#suffix'        => '</div>',
-    );
+    if(!empty($pt_value['taxonomy_json'])){
+      $taxonomy = json_decode($pt_value['taxonomy_json']);
+    }else{
+      $taxonomy = array();
+    }
+
+    if (array_key_exists($vocabularie->machine_name, $taxonomy)) {
+      $machine_name = $vocabularie->machine_name;
+      $form['pt_settings_rss']['taxonomy_'.  $vocabularie_name] = array(
+        '#type'          => 'select',
+        '#title'         => t( $vocabularie_name),
+        '#options'       => $vocab,
+        '#default_value' =>  $taxonomy->$machine_name,
+        '#suffix'        => '</div>',
+      );
+    }else{
+      $form['pt_settings_rss']['taxonomy_'.  $vocabularie_name] = array(
+        '#type'          => 'select',
+        '#title'         => t( $vocabularie_name),
+        '#options'       => $vocab,
+        '#default_value' => 'all',
+        '#suffix'        => '</div>',
+      );
+    }
   }
   $form['pt_settings_rss']['pt_post'] = array(
     '#type'          => 'checkbox',
     '#title'         => t('Use PublishThis Post Link for the RSS Feed Item URL when possible'),
     '#description'   => t(''),
-    '#default_value' => variable_get('published_rss_pt_post', '1'),
+    '#default_value' => isset($pt_value['pt_postlink']) ? $pt_value['pt_postlink'] : '1',
   );
   $form['submit'] = array(
 	'#type'  => 'submit',
@@ -388,9 +405,9 @@ function edit_publishthis_rss_publishing_actions_submit($form, &$form_state) {
 	  )
 	  ->condition('id', $edit, '=')
 	  ->execute();
-
+    drupal_flush_all_caches();
 	drupal_set_message(t('Publishing Action changes update successfully.'));
-	drupal_goto('admin/config/system/publishthis-rss/publishing-actions');
+	drupal_goto('admin/config/system/publishthis-rss-feed');
   }
 
 }
