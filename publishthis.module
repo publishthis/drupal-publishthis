@@ -25,7 +25,11 @@ function publishthis_init() {
   include drupal_get_path('module', 'publishthis') . '/publishthis-settings.php';
   // css uses to manage fields style
   drupal_add_css(drupal_get_path('module', 'publishthis') . '/assets/css/publishthis.admin.css');
-
+  
+  // add general style
+  if(!empty($pt_settings_value['styling']['enable_styling'])){
+     drupal_add_css(drupal_get_path('module', 'publishthis') . '/assets/css/publishthis.general.css', array('group' => CSS_DEFAULT, 'every_page' => TRUE));
+   }
   if(isset($pt_settings_value['endpoint']) && !empty($pt_settings_value['endpoint'])){
     $pt_endpoint  = $pt_settings_value['endpoint'];
   }

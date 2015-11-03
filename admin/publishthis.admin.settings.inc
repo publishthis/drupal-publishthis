@@ -86,7 +86,6 @@ function publishthis_settings($form, &$form_state) {
 	'#prefix'        => '<div class="taxonomy-publish-block"><div class="taxonomy-publish">',
 	'#suffix'        => '<span></span></div>',
   );
-
   $node_taxonomy                   = taxonomy_get_vocabularies();
   $taxonomy_types                  = array();
   $taxonomy_types['default']       = 'Default';
@@ -107,10 +106,10 @@ function publishthis_settings($form, &$form_state) {
   );
 
   $form['pt_settings']['styling'] = array(
-	'#type'          => 'checkboxes',
+    '#type'          => 'checkboxes',
 	'#title'         => t('Styling'),
-	'#options'       => drupal_map_assoc(array(t('Enable PublishThis CSS styles'))),
-	'#default_value' => !empty($pt_value) ? (array) $pt_value['styling']['Enable PublishThis CSS styles'] : array('Enable PublishThis CSS styles'),
+    '#options'       => array('enable_styling' => "Enable PublishThis CSS styles"),
+	'#default_value' => isset($pt_value['styling']) ? $pt_value['styling'] : 'Enable PublishThis CSS styles',
 	'#description'   => t('')
   );
   $form['pt_settings']['debug']   = array(
@@ -134,7 +133,6 @@ function publishthis_settings($form, &$form_state) {
 
   }
   else {
-
 	if (!empty($pt_value['curatedby']) && ($pt_value['curatedby'] == 'none')) {
 	  $curated_value = 'footer';
 	}
@@ -279,7 +277,6 @@ function publishthis_settings_submit($form, &$form_state) {
 	$setting_formValue = serialize($form_state['values']);
 	// Set varaible name, value pair
 	$pt_settings_value = variable_set('pt_settings', $setting_formValue);
-
 	drupal_set_message(t('The publishthis settings saved'));
 	drupal_goto('admin/config/system/publishthis');
 
