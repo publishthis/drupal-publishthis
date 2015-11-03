@@ -198,10 +198,16 @@ class Publishthis_Publish {
 					}
 				}				
 			}
-			$action_meta['ptauthors'] = $custom_data['ptauthors'];
-			$action_meta['ptcategories'] = $custom_data['ptcategories'];
-			$action_meta['pttags'] = $custom_data['pttags'];
-			// Categorize
+          if (isset($custom_data['ptcategories'])) {
+            $action_meta['ptcategories'] = $custom_data['ptcategories'];
+          }
+          if (isset($custom_data['pttags'])) {
+            $action_meta['pttags'] = $custom_data['pttags'];
+          }
+          if (isset($custom_data['ptauthors'])) {
+            $action_meta['ptauthors'] = $custom_data['ptauthors'];
+          }
+          // Categorize
 			// map categories from custom data in a Feed to categories in wordpress
 			if ( !empty($action_meta['action_category']) ) {
 				if ( isset( $custom_data[ $action_meta['action_category'] ] ) ) {
