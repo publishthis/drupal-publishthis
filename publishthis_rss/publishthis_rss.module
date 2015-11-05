@@ -22,7 +22,7 @@ function publishthis_rss_menu() {
         'page callback' => 'publishthis_rss_display_rss',
         'access callback' => TRUE,
         'page arguments' => array($row),
-        'type' => MENU_NORMAL_ITEM );
+        'type' => MENU_LOCAL_TASK );
      }
    $items['admin/config/system/publishthis-rss-feed'] = array(
     'title' => 'PublishThis RSS',
@@ -61,19 +61,6 @@ function publishthis_rss_menu() {
     'file' => 'publishthis_rss.admin.publishingactions.inc',
     'file path' => drupal_get_path('module', 'publishthis_rss') . '/admin'
   );
-  /*  $items['admin/config/system/publishthis-rss'] = array(
-      'title' => 'PublishThis RSS',
-      'page callback' => array('publishthis_rss_publishingactions'),
-      'access arguments' => array('administer site configuration'),
-      'file' => 'publishthis_rss.admin.settings.inc',
-      'file path' => drupal_get_path('module', 'publishthis_rss') . '/admin'
-    );
-
-
-
-  */
-
-
   return $items;
 }
 
@@ -143,4 +130,3 @@ function publishthis_rss_display_rss($feed) {
   $html .='</channel></rss>';
   print $html;
 }
-
