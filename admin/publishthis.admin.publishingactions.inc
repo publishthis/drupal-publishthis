@@ -6,7 +6,6 @@
  */
 function publishthis_publishingactions() {
   $output = '';
-
   $objAPI        = new Publishthis_API();
   $current_token = $objAPI->_get_token();
 
@@ -245,55 +244,6 @@ function publishthis_addnew_publishingactions($form, &$form_state) {
 	'#default_value' => isset($pt_value['content_status']) ? $pt_value['content_status'] : '0',
 	'#description'   => t(''),
   );
-
-  // Category
-  // Form sate defualt value
-  if (!empty($pt_value['action_category'])) {
-	$cate_selected = $pt_value['action_category'];
-  }
-  else {
-//    $cate_selected = !empty($form_state['values']['feed_template']) ? $form_state['values']['action_category'] : '';
-	$cate_selected = $pt_settings_value['taxonomy_group'];
-  }
-  $categories = array();
-  global $pt_settings_value;
-  if ($pt_settings_value['taxonomy']['get_term'] !== 0) {
-	$taxonomies = taxonomy_vocabulary_get_names();
-	foreach ($taxonomies as $taxonomie) {
-	  if ($taxonomie->machine_name == $pt_settings_value['taxonomy_group']) {
-		$tax_id = $taxonomie->vid;
-	  }
-	  if ($pt_settings_value['taxonomy_group'] == 'default') {
-		$tax_id = 1;
-	  }
-	}
-	$terms = taxonomy_get_tree($tax_id);
-	foreach ($terms as $term) {
-	  $categories[$term->name] = $term->name;
-	}
-	$form[$group]['action_category'] = array(
-	  '#type'          => 'select',
-	  '#title'         => t('Category'),
-	  '#prefix'        => '<div id="template-category-replace">',
-	  '#suffix'        => '</div>',
-	  '#options'       => $categories,
-	  '#ajax'          => array(
-		'event'    => 'change',
-		'callback' => '_ajax_taxonomies_dropdown_callback',
-		'wrapper'  => 'template-taxonomies-replace',
-	  ),
-	  '#default_value' => $cate_selected,
-	);
-  }
-  /*  $form[$group]['taxonomy_group'] = array(
-	'#type' => 'select',
-	'#title' => t('Taxonomy'),
-	'#prefix' => '<div id="template-taxonomies-replace">',
-	'#suffix' => '</div>',
-	'#options' => _ajax_get_taxonomy_dropdown_options($cate_selected),
-	'#default_value' => isset($pt_value['taxonomy_group'])?$pt_value['taxonomy_group']: '',
-  );*/
-
   $def_featured_image_option = 'Post Image: Include document image in template? (uncheck this if your Featured image gets inserted into your post by your theme)';
 
   $form[$group]['featured_image'] = array(
@@ -624,8 +574,7 @@ function publishthis_addnew_publishingactions_submit($form, &$form_state) {
 	  ->execute();
 
 	drupal_set_message(t('Publishing Action changes update successfully.'));
-
-	drupal_goto('admin/config/system/publishthis/publishing-actions');
+    drupal_goto('admin/config/system/publishthis/publishing-actions');
   }
 
 }
@@ -998,7 +947,6 @@ function delete_publishthis_publishing_actions() {
 
 	drupal_set_message('One record has been deleted successfully.');
 	drupal_goto("admin/config/system/publishthis/publishing-actions");
-
   }
 
 }
