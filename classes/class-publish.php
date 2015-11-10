@@ -198,16 +198,16 @@ class Publishthis_Publish {
 					}
 				}				
 			}
-          if (isset($custom_data['ptcategories'])) {
-            $action_meta['ptcategories'] = $custom_data['ptcategories'];
-          }
-          if (isset($custom_data['pttags'])) {
-            $action_meta['pttags'] = $custom_data['pttags'];
-          }
-          if (isset($custom_data['ptauthors'])) {
-            $action_meta['ptauthors'] = $custom_data['ptauthors'];
-          }
-          // Categorize
+			if (isset($custom_data['ptcategories'])) {
+			$action_meta['ptcategories'] = $custom_data['ptcategories'];
+			}
+			if (isset($custom_data['pttags'])) {
+			$action_meta['pttags'] = $custom_data['pttags'];
+			}
+			if (isset($custom_data['ptauthors'])) {
+			$action_meta['ptauthors'] = $custom_data['ptauthors'];
+			}		
+			// Categorize
 			// map categories from custom data in a Feed to categories in wordpress
 			if ( !empty($action_meta['action_category']) ) {
 				if ( isset( $custom_data[ $action_meta['action_category'] ] ) ) {
@@ -411,10 +411,20 @@ class Publishthis_Publish {
 
 		// Download and set featured image
 		$featured_image = $content_features['featured_image']['save_featured_image']==='save_featured_image' ? true : false;
-	
+
 		if ( $featured_image && !empty ( $content->imageUrl ) ) {
-			$node->field_image[$node->language][0] = $this->_get_featured_image( $contentImageUrl, $content_features );	
-		}
+		$node->field_image[$node->language][0] = $this->_get_featured_image( $contentImageUrl, $content_features );
+        if ($content_features['featured_image_size'] == 'theme_default') {
+          $node->field_image[$node->language][0]['width'] = $content_features['image_width'];
+          $node->field_image[$node->language][0]['height'] = $content_features['image_height'];
+        }elseif($content_features['featured_image_size'] == 'custom') {
+          $node->field_image[$node->language][0]['width'] = $content_features['featured_image_width'];
+          $node->field_image[$node->language][0]['height'] = $content_features['featured_image_height'];
+        }
+        elseif ($content_features['featured_image_size'] == 'custom_max_width') {
+          $node->field_image[$node->language][0]['width'] = $content_features['featured_image_maxwidth'];
+        }
+        }
 		else {
 			unset( $node->field_image[$node->language][0] );
 		}
@@ -438,12 +448,6 @@ class Publishthis_Publish {
 		$node->field_tags[$node->language][] = array('tid' =>  $tid);
 		}
 		}
-		/*	if(!empty($cats)){
-		foreach($cats as $cat){
-		$tid = _get_tid_from_term_name($cat->categoryName, $cat->taxonomyName);
-		 $node->field_products[$node->language][] = array('tid' =>  $tid);
-		}
-		}*/
 		$node = node_submit($node);
 		node_save($node);
 	  /* Add ptmetadata to node */
@@ -581,7 +585,7 @@ class Publishthis_Publish {
 	/**
 	 * Generates resized featured image and link it to the node
 	 */
-	private function _get_featured_image( $contentImageUrl, $content_features ) {
+  private function _get_featured_image( $contentImageUrl, $content_features ) {
 		$file_name = uniqid() . '_' . basename($contentImageUrl);
 		$ok_override_fimage_size = $content_features['ignore_original_image']['resize_featured_image']==="resize_featured_image" ? "1" : "0";
 
@@ -609,7 +613,7 @@ class Publishthis_Publish {
 			'status' => 'info',
 			'details' => $resize_pref . "ok to resize original featured image:" . $ok_override_fimage_size . "; url:" . $contentImageUrl );
 		$this->obj_api->_log_message( $message, "1" );
-		
+
 		$ch = curl_init();
 		$timeout = 5;
 		curl_setopt($ch, CURLOPT_URL, $contentImageUrl);
@@ -617,21 +621,20 @@ class Publishthis_Publish {
 		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
 		$data = curl_exec($ch);
 		curl_close($ch);			
-	
-		$fp = fopen($file_name, 'w');
+
+        $fp = fopen($file_name, 'w');
 		fwrite($fp, $data);
 		fclose($fp);
-		
-		$file_path = drupal_realpath($file_name); // Create a File object
-		
+
+	  $file_path = system_retrieve_file($contentImageUrl, NULL, FALSE, FILE_EXISTS_REPLACE);
 		$file = (object) array(
 				'uid' => 1,
 				'uri' => $file_path,
 				'filemime' => file_get_mimetype($contentImageUrl),
 				'status' => 1,
-			); 
-		
-		$file = file_copy($file, 'public://'); // Save the file to the root of the files directory. You can specify a subdirectory, for example, 'public://images' 
+			);
+
+		$file = file_copy($file, 'public://'); // Save the file to the root of the files directory. You can specify a subdirectory, for example, 'public://images'
 		@unlink($file_path);
 		return (array)$file;
 	}
