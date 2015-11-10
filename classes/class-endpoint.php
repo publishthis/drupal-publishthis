@@ -194,32 +194,29 @@ class Publishthis_Endpoint {
 
   private function actionGetCategories() {
 	global $pt_settings_value;
-	$categories = array();
-	if ($pt_settings_value['taxonomy']['get_term'] !== 0) {
-	  $taxonomies = taxonomy_vocabulary_get_names();
-	  foreach ($taxonomies as $taxonomie) {
-		if ($taxonomie->machine_name == $pt_settings_value['taxonomy_group']) {
-
-		  $tax_id = $taxonomie->vid;
-
-		}
-		if ($pt_settings_value['taxonomy_group'] == 'default') {
-		  $tax_id = 1;
-		}
-	  }
-	  $terms    = taxonomy_get_tree($tax_id);
-	  $tax_name = taxonomy_vocabulary_load($tax_id);
-	  foreach ($terms as $term) {
-		$category               = array(
-		  'id'            => intval($term->tid),
-		  'name'          => $term->name,
-		  'taxonomyId'    => intval($term->tid),
-		  'taxonomyName'  => $tax_name->machine_name,
-		  'subcategories' => array()
-		);
-		$categories[$term->tid] = $category;
-	  }
-	}
+    $categories = array();
+    if ($pt_settings_value['taxonomy']['get_term'] !== 0) {
+      $taxonomies = taxonomy_vocabulary_get_names();
+      foreach ($taxonomies as $taxonomie) {
+        if ($taxonomie->machine_name == $pt_settings_value['taxonomy_group']) {
+          $tax_id = $taxonomie->vid;
+        }
+        if (!$pt_settings_value['taxonomy_group'] !== 'default') {
+          $terms    = taxonomy_get_tree($tax_id);
+          $tax_name = taxonomy_vocabulary_load($tax_id);
+          foreach ($terms as $term) {
+            $category               = array(
+              'id'            => intval($term->tid),
+              'name'          => $term->name,
+              'taxonomyId'    => intval($term->tid),
+              'taxonomyName'  => $tax_name->machine_name,
+              'subcategories' => array()
+            );
+            $categories[$term->tid] = $category;
+          }
+        }
+      }
+    }
 	$obj               = new stdClass();
 	$obj->success      = TRUE;
 	$obj->errorMessage = NULL;
