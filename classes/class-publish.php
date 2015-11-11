@@ -422,7 +422,10 @@ class Publishthis_Publish {
           $node->field_image[$node->language][0]['height'] = $content_features['featured_image_height'];
         }
         elseif ($content_features['featured_image_size'] == 'custom_max_width') {
-          $node->field_image[$node->language][0]['width'] = $content_features['featured_image_maxwidth'];
+	$size = getimagesize($content_features['featured_image_maxwidth']);
+         if($size['0'] > $content_features['featured_image_size']){
+           $node->field_image[$node->language][0]['width'] = $content_features['featured_image_maxwidth'];
+         }
         }
         }
 		else {
