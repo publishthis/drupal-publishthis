@@ -89,3 +89,21 @@ p.pt-annotation {
 p.pt-spacer {
 	clear: both;
 }
+
+.pt-annotation-title-h-right { text-align: right; }
+.pt-annotation-title-h-left { text-align: left; }
+.pt-annotation-title-v-top { vertical-align: top; }
+.pt-annotation-title-v-middle { vertical-align: middle; }
+.pt-annotation-title-v-bottom { vertical-align: bottom; }
+
+.aligncenter { text-align: center; margin: auto; margin-left: auto; display: block; }
+.alignright { text-align: right; margin: auto; margin-left: auto; float: right;}
+.alignleft { text-align: left; margin: auto; margin-left: auto; float: left; }
+
+.pt-spacer img { border: none; width: 1px; height: 1px; }
+.clear { clear:both; }
+
+.pt_photo_caption { color: #888888; font-style: italic; margin: auto; max-width: 200px; text-align: center; font-size: 12px; }
+
+.alignright .pt_photo { margin-left: 20px; }
+.alignleft .pt_photo { margin-right: 20px; }
