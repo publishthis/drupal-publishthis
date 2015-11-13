@@ -188,6 +188,7 @@ class Publishthis_Publish {
 			$custom_data = $managerCategories = array();
 			$action_meta['ptauthors'] = null;
 			$action_meta['pttags'] = null;
+			$action_meta['ptcategories'] = null;
 			foreach ( $result_list as $result ) {
 				if( strtoupper( $result->type ) != 'CMS' && isset($result->value) && !empty($result->value) ) {
 					$custom_data[$result->shortCode] = $result->value;
@@ -422,7 +423,7 @@ class Publishthis_Publish {
           $node->field_image[$node->language][0]['height'] = $content_features['featured_image_height'];
         }
         elseif ($content_features['featured_image_size'] == 'custom_max_width') {
-	$size = getimagesize($content_features['featured_image_maxwidth']);
+         $size = getimagesize($content_features['featured_image_maxwidth']);
          if($size['0'] > $content_features['featured_image_size']){
            $node->field_image[$node->language][0]['width'] = $content_features['featured_image_maxwidth'];
          }
@@ -451,7 +452,15 @@ class Publishthis_Publish {
 		$node->field_tags[$node->language][] = array('tid' =>  $tid);
 		}
 		}
-		$node = node_submit($node);
+		if(!empty($cats)){
+		foreach($cats as $cat){
+		$tid = _get_tid_from_term_name($cat->categoryName, $cat->taxonomyName);
+		$field_node = 'pt_'. $cat->taxonomyName;
+		$node->{$field_node}[$node->language][]  = array('tid' =>  $tid);
+		}
+		}
+
+			$node = node_submit($node);
 		node_save($node);
 	  /* Add ptmetadata to node */
 	  $someValue = json_encode($curated_content);

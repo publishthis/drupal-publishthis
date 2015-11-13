@@ -50,32 +50,32 @@ function publishthis_settings($form, &$form_state) {
 	'#default_value' => isset($pt_value['curated_publish']) ? $pt_value['curated_publish'] : 'publishthis_import_from_manager',
 	'#description'   => t('')
   );
-  $form['pt_settings']['pause_polling'] = array(
+  $form['pt_settings']['pause_polling']   = array(
 	'#type'          => 'checkboxes',
 	'#title'         => t('Pause Polling'),
 	'#options'       => drupal_map_assoc(array(t('Stop polling the API for new content'))),
 	'#default_value' => !empty($pt_value) ? (array) $pt_value['pause_polling']['Stop polling the API for new content'] : array(),
 	'#description'   => t('')
   );
-  if(isset($pt_value['endpoint']) && !empty($pt_value['endpoint'])){
-    $pt_endpoint  = $pt_value['endpoint'];
+  if (isset($pt_value['endpoint']) && !empty($pt_value['endpoint'])) {
+	$pt_endpoint = $pt_value['endpoint'];
   }
-  else{
-    $pt_endpoint = getRandomWord();
+  else {
+	$pt_endpoint = getRandomWord();
   }
   $form['pt_settings']['endpoint'] = array(
-    '#type'          => 'textfield',
-    '#default_value' => isset($pt_value['endpoint']) ? $pt_value['endpoint'] : $pt_endpoint,
-    '#required'      => TRUE,
-    '#description'   => t(''),
-    '#prefix'        => '<div class="form-item form-type-checkboxes">
+	'#type'          => 'textfield',
+	'#default_value' => isset($pt_value['endpoint']) ? $pt_value['endpoint'] : $pt_endpoint,
+	'#required'      => TRUE,
+	'#description'   => t(''),
+	'#prefix'        => '<div class="form-item form-type-checkboxes">
 			  <label for="edit-cms-url">CMS URL</label>
 			<div id="edit-cms-url">
-			  <div class="form-item form-type-checkbox">' . $base_url . '/?q='.  $pt_endpoint .'
+			  <div class="form-item form-type-checkbox">' . $base_url . '/?q=' . $pt_endpoint . '
 			  </div>
 			</div>
 		  </div><div id="endpoint_input">',
-    '#suffix'   => '</div>',
+	'#suffix'        => '</div>',
   );
   $form['pt_settings']['taxonomy'] = array(
 	'#type'          => 'checkboxes',
@@ -87,10 +87,10 @@ function publishthis_settings($form, &$form_state) {
 	'#suffix'        => '<span></span></div>',
   );
 
-  $node_taxonomy                   = taxonomy_get_vocabularies();
-  $taxonomy_types                  = array();
-  $taxonomy_types['default']       = 'Default';
-   foreach ($node_taxonomy as $node) {
+  $node_taxonomy             = taxonomy_get_vocabularies();
+  $taxonomy_types            = array();
+  $taxonomy_types['default'] = 'Default';
+  foreach ($node_taxonomy as $node) {
 	$taxonomy_types[$node->machine_name] = $node->name;
   }
   $form['pt_settings']['taxonomy_group'] = array(
@@ -101,7 +101,7 @@ function publishthis_settings($form, &$form_state) {
 	'#prefix'        => '<div class="taxonomy-group-block">',
 	'#suffix'        => '</div></div>',
   );
-  $form['pt_settings']['api_version'] = array(
+  $form['pt_settings']['api_version']    = array(
 	'#type'          => 'hidden',
 	'#default_value' => '3.0'
   );
@@ -144,7 +144,7 @@ function publishthis_settings($form, &$form_state) {
 
   }
 
-  $form['pt_settings']['curatedby'] = array(
+  $form['pt_settings']['curatedby']       = array(
 	'#type'          => 'radios',
 	'#title'         => t('Show PublishThis logo in'),
 	'#attributes'    => array('class' => array('horizontal-list')),
@@ -166,7 +166,7 @@ function publishthis_settings($form, &$form_state) {
 	'#default_value' => isset($pt_value['curatedby_logos']) ? $pt_value['curatedby_logos'] : "1",
 	'#description'   => t('')
   );
-  $form['pt_settings']['pt_token'] = array(
+  $form['pt_settings']['pt_token']        = array(
 	'#type'        => 'fieldset',
 	'#title'       => t('API Token'),
 	'#weight'      => 2,
@@ -250,6 +250,7 @@ function api_token_validate_callback($form, $form_state) {
   // return form_state value  
   return $form;
 }
+
 /**
  * Implements of hook_form_validate()
  * @desc Valdiate form value
@@ -272,10 +273,48 @@ function publishthis_settings_validate($form, &$form_state) {
  * @desc Submit form value
  */
 function publishthis_settings_submit($form, &$form_state) {
+  if (!empty($form['pt_settings']['taxonomy']['#value']['get_term']) && $form['pt_settings']['taxonomy_group']['#value'] !== 'default') {
+	$vocabulary = $form['pt_settings']['taxonomy_group']['#value'];
+	if (!field_info_field('pt_' . $vocabulary)) {
+	  $field = array(
+		'field_name'  => 'pt_' . $vocabulary,
+		'type'        => 'taxonomy_term_reference',
+		'cardinality' => -1,
+		'settings'    => array(
+		  'allowed_values' => array(
+			array(
+			  'vocabulary' => $vocabulary,
+			  'parent'     => 0
+			),
+		  ),
+		),
+	  );
+	  field_create_field($field);
+	}
+	$node_types      = node_type_get_types();
+	$vocabulary_name = taxonomy_vocabulary_machine_name_load($vocabulary);
+	foreach ($node_types as $node_type) {
+	  if (!field_info_instance('node', 'pt_' . $vocabulary, $node_type->type)) {
+		$instance = array(
+		  'field_name'  => 'pt_' . $vocabulary,
+		  'label'       => $vocabulary_name->name,
+		  'bundle'      => $node_type->type,
+		  'entity_type' => 'node',
+		  'widget'      => array(
+			'type'      => 'options_buttons',
+			'behaviors' => array(
+			  'multiple values' => FIELD_CARDINALITY_UNLIMITED,
+			),
+		  ),
+		);
+		field_create_instance($instance);
+	  }
+
+	}
+  }
 
   if ($form_state['clicked_button']['#value'] == "Save Changes") {
 
-	// Serialize setting form value
 	$setting_formValue = serialize($form_state['values']);
 	// Set varaible name, value pair
 	$pt_settings_value = variable_set('pt_settings', $setting_formValue);
