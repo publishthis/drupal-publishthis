@@ -165,9 +165,9 @@ class Publishthis_Publish {
 	 * @param array   $action_meta Publishing Action data
 	 */
 	function publish_feed_with_publishing_action( $feed, $action_meta ) {
-		
 		try{
-
+			
+	
 			$posts_updated = $posts_inserted = $posts_deleted = $posts_skipped = 0;
 
 			$feed_id = $feed['feedId'];
@@ -184,18 +184,30 @@ class Publishthis_Publish {
 			$arrPostCategoryNames = array();
 
 			$result_list = $this->obj_api->get_custom_data_by_feed_id ( $feed_id, array () );
+			
 			$custom_data = $managerCategories = array();
 			$action_meta['ptauthors'] = null;
+			$action_meta['pttags'] = null;
+			$action_meta['ptcategories'] = null;
 			foreach ( $result_list as $result ) {
 				if( strtoupper( $result->type ) != 'CMS' && isset($result->value) && !empty($result->value) ) {
 					$custom_data[$result->shortCode] = $result->value;
-
+						
 					if ( !in_array( $result->shortCode, array( 'ptauthors', 'ptcategories', 'pttags' ) ) ) {
 						$managerCategories[] = $result->value;
+						
 					}
 				}				
 			}
-					
+			if (isset($custom_data['ptcategories'])) {
+			$action_meta['ptcategories'] = $custom_data['ptcategories'];
+			}
+			if (isset($custom_data['pttags'])) {
+			$action_meta['pttags'] = $custom_data['pttags'];
+			}
+			if (isset($custom_data['ptauthors'])) {
+			$action_meta['ptauthors'] = $custom_data['ptauthors'];
+			}		
 			// Categorize
 			// map categories from custom data in a Feed to categories in wordpress
 			if ( !empty($action_meta['action_category']) ) {
@@ -283,7 +295,6 @@ class Publishthis_Publish {
 	 */
 	private function _update_content( $nid, $feed_id, $set_name, $docid, $arrPostCategoryNames, $curated_content, $content_features ) {
 		$body_text = '';
-
 		//if don't add new node
 		if( $content_features['ind_add_posts']=='0' && empty($nid) && $content_features['format_type'] == 'Individual' ) return;
 
@@ -317,6 +328,7 @@ class Publishthis_Publish {
 					return "skipped";
 				}
 			}
+
 		}		
 		
 		$node->type = $content_features['content_type'];
@@ -326,7 +338,6 @@ class Publishthis_Publish {
 		$node->status = $content_features['content_status'];
 		$node->language = LANGUAGE_NONE;
 		$node->is_new = empty($nid) ? TRUE : FALSE;
-
 		if ( $content_features['format_type'] == 'Digest' ) {
 			$node->title = !empty( $content_features['digest_title'] ) ? $content_features['digest_title'] : NODE_NO_TITLE	;
 
@@ -366,8 +377,9 @@ class Publishthis_Publish {
 				$curated_content_index++;
 			}
 
-			$node->body[$node->language][0]['value']   = $body_text;
-			$node->body[$node->language][0]['summary'] = $this->_build_node_summary($curated_content[0]);
+		$node->body[$node->language][0]['value']   = $body_text;
+		$node->body[$node->language][0]['format'] = 'full_html';
+		$node->body[$node->language][0]['summary'] = $this->_build_node_summary($curated_content[0]);
 		}
 		else {
 			$content = $curated_content;
@@ -386,13 +398,11 @@ class Publishthis_Publish {
 
 			$this->obj_render->pt_content = $content;
 			$this->obj_render->pt_content_features = $content_features;
-			$body_text = $this->obj_render->render_content( $content_features['format_type'] );
-
+    		$body_text = $this->obj_render->render_content( $content_features['format_type'] );
 			$node->body[$node->language][0]['value']   = $body_text;
 			$node->body[$node->language][0]['summary'] = $this->_build_node_summary($content);
+            $node->body[$node->language][0]['format'] = 'full_html';
 		}
-
-		$node->body[$node->language][0]['format']  = 'full_html';
 
 		//Set content alias on insert
 		if( empty($nid) ) {
@@ -402,10 +412,23 @@ class Publishthis_Publish {
 
 		// Download and set featured image
 		$featured_image = $content_features['featured_image']['save_featured_image']==='save_featured_image' ? true : false;
-	
+
 		if ( $featured_image && !empty ( $content->imageUrl ) ) {
-			$node->field_image[$node->language][0] = $this->_get_featured_image( $contentImageUrl, $content_features );	
-		}
+		$node->field_image[$node->language][0] = $this->_get_featured_image( $contentImageUrl, $content_features );
+        if ($content_features['featured_image_size'] == 'theme_default') {
+          $node->field_image[$node->language][0]['width'] = $content_features['image_width'];
+          $node->field_image[$node->language][0]['height'] = $content_features['image_height'];
+        }elseif($content_features['featured_image_size'] == 'custom') {
+          $node->field_image[$node->language][0]['width'] = $content_features['featured_image_width'];
+          $node->field_image[$node->language][0]['height'] = $content_features['featured_image_height'];
+        }
+        elseif ($content_features['featured_image_size'] == 'custom_max_width') {
+         $size = getimagesize($content_features['featured_image_maxwidth']);
+         if($size['0'] > $content_features['featured_image_size']){
+           $node->field_image[$node->language][0]['width'] = $content_features['featured_image_maxwidth'];
+         }
+        }
+        }
 		else {
 			unset( $node->field_image[$node->language][0] );
 		}
@@ -419,11 +442,33 @@ class Publishthis_Publish {
 				$node->field_tags[$node->language][$key]['vid'] = intval($term->vid);
 			}
 		}
+		$tags = array();
+		$tags = $content_features['pttags'];
+		$cats = $content_features['ptcategories'];
+		$tid = array();
+		if(!empty($tags)){
+		foreach($tags as $tag){
+		$tid = _get_tid_from_term_name($tag->displayName, 'tags');
+		$node->field_tags[$node->language][] = array('tid' =>  $tid);
+		}
+		}
+		if(!empty($cats)){
+		foreach($cats as $cat){
+		$tid = _get_tid_from_term_name($cat->categoryName, $cat->taxonomyName);
+		$field_node = 'pt_'. $cat->taxonomyName;
+		$node->{$field_node}[$node->language][]  = array('tid' =>  $tid);
+		}
+		}
 
-		$node = node_submit($node);
+			$node = node_submit($node);
 		node_save($node);
-
-		if( empty( $node->nid ) ) {
+	  /* Add ptmetadata to node */
+	  $someValue = json_encode($curated_content);
+	    db_update('node')
+          ->fields( array( 'ptmetadata' => $someValue ) )
+          ->condition( 'nid', $node->nid, '=')
+          ->execute();
+           if( empty( $node->nid ) ) {
 			$message = array(
 				'message' => 'Post insert/update error',
 				'status' => 'error',
@@ -449,7 +494,7 @@ class Publishthis_Publish {
 	 */
 	private function _build_node_summary( $content ) {
 		$summary = isset($content->summary) && strlen($content->summary)>0 ? $content->summary : '';
-		return text_summary( $summary );
+		return text_summary('<p class="pt-excerpt">'.$summary. '</p>' );
 	} 
 
 	/**
@@ -552,10 +597,10 @@ class Publishthis_Publish {
 	/**
 	 * Generates resized featured image and link it to the node
 	 */
-	private function _get_featured_image( $contentImageUrl, $content_features ) {
+  private function _get_featured_image( $contentImageUrl, $content_features ) {
 		$file_name = uniqid() . '_' . basename($contentImageUrl);
 		$ok_override_fimage_size = $content_features['ignore_original_image']['resize_featured_image']==="resize_featured_image" ? "1" : "0";
- 
+
 		//build the url that we would need to download the featured image for
 		switch ( $content_features ['featured_image_size'] ) {
 			case 'custom':
@@ -570,7 +615,7 @@ class Publishthis_Publish {
 				break;
 
 			case 'theme_default':
-			default: 
+			default:
 				$resize_pref = "";
 				break;
 		}
@@ -580,7 +625,7 @@ class Publishthis_Publish {
 			'status' => 'info',
 			'details' => $resize_pref . "ok to resize original featured image:" . $ok_override_fimage_size . "; url:" . $contentImageUrl );
 		$this->obj_api->_log_message( $message, "1" );
-		
+
 		$ch = curl_init();
 		$timeout = 5;
 		curl_setopt($ch, CURLOPT_URL, $contentImageUrl);
@@ -588,21 +633,20 @@ class Publishthis_Publish {
 		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
 		$data = curl_exec($ch);
 		curl_close($ch);			
-	
-		$fp = fopen($file_name, 'w');
+
+        $fp = fopen($file_name, 'w');
 		fwrite($fp, $data);
 		fclose($fp);
-		
-		$file_path = drupal_realpath($file_name); // Create a File object
-		
+
+	  $file_path = system_retrieve_file($contentImageUrl, NULL, FALSE, FILE_EXISTS_REPLACE);
 		$file = (object) array(
 				'uid' => 1,
 				'uri' => $file_path,
 				'filemime' => file_get_mimetype($contentImageUrl),
 				'status' => 1,
-			); 
-		
-		$file = file_copy($file, 'public://'); // Save the file to the root of the files directory. You can specify a subdirectory, for example, 'public://images' 
+			);
+
+		$file = file_copy($file, 'public://'); // Save the file to the root of the files directory. You can specify a subdirectory, for example, 'public://images'
 		@unlink($file_path);
 		return (array)$file;
 	}
@@ -614,7 +658,6 @@ class Publishthis_Publish {
 	 */
 
 	public function publish_specific_feeds( $arrFeedIds ) {
-		
 		//use these to keep track of what published and what didn't
 		//so we can report it back to the caller in an exception
 		$intDidPublish = 0;

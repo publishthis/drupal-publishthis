@@ -374,7 +374,7 @@ class Publishthis_Render {
 		}
 	
 		$img_style = '';
-		$class = $this->pt_content_features['image_alignment']!='default' ? 'class="pt_content_photo align' . $this->pt_content_features['image_alignment'] . '"' : 'class="pt_content_photo"';
+		$class = $this->pt_content_features['image_alignment']!='default' ? 'class="align' . $this->pt_content_features['image_alignment'] . '"' : 'class=""';
 		$caption_width = 0;
 
 		if ( $allow_to_override == "1" || !isset( $this->pt_content->imageUrlPublisher ) ) {
@@ -389,23 +389,23 @@ class Publishthis_Render {
 		}
 
 		if ( isset( $sourceImg ) && !empty( $sourceImg ) ) {
-			$html .= '<div class="pt_photo">';
+			$html .= '<p class="pt_image">';
 			if ( !empty( $this->pt_content->url ) ) {
 				$html .= '<a href="' . $this->obj_utils->build_url_with_tracking($this->pt_content->url, $this->pt_content->feedId,true,$this->pt_content->docId,$this->pt_content->contentType)  . '" rel="nofollow" target="_blank">';
 			}
 
-			$html .= '<img src="' . $sourceImg . '"/>';
+			$html .= '<img ' . $class . ' src="' . $sourceImg . '"/>';
 
 			if ( !empty( $this->pt_content->url ) ) {
 				$html .= '</a>';
 			}
-			$html .= '</div>';
+			$html .= '</p>';
 			if ( !empty( $this->pt_content->photoCaption ) ) {
-				$html .= '<div class="pt_photo_caption" '.($caption_width>0 ? 'style="width:'.$caption_width.'px;"' : '').'>' . $this->pt_content->photoCaption . '</div>';
+				$html .= '<div class="pt_image_caption_text wp-caption-text" '.($caption_width>0 ? 'style="width:'.$caption_width.'px;"' : '').'>' . $this->pt_content->photoCaption . '</div>';
 			}			
 		}
 
-		$html = '<div ' . $class . '>' . $html . '</div>';
+//		$html = '<div>' . $html . '</div>';
 		return $html;
 	}
 

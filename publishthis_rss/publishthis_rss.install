@@ -1,0 +1,37 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the publishthis rss module.
+ */
+
+/**
+ * Implementation of hook_schema().
+ */
+function publishthis_rss_schema() {
+  $schema['pt_rssfeed'] = array(
+    'fields' => array(
+      'id' => array('type' => 'serial', 'not null' => TRUE),
+      'title' => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE),
+      'pt_postlink' => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE),
+      'number_results' => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE),
+      'taxonomy_json' => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE),
+     ),
+    'primary key' => array('id'),
+  );
+ return $schema;
+}
+
+function publishthis_rss_update_03() {
+  $schema['pt_rssfeed'] = array(
+      'fields' => array(
+        'id' => array('type' => 'serial', 'not null' => TRUE),
+        'title' => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE),
+        'pt_postlink' => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE),
+        'number_results' => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE),
+        'taxonomy_json' => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE),
+       ),
+      'primary key' => array('id'),
+    );
+  db_create_table('pt_rssfeed', $schema['pt_rssfeed']);
+}

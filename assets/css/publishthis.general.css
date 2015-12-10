@@ -1,0 +1,109 @@
+/** images and their captions */
+
+.alignleft {
+	float: left;
+	margin-right: 20px;
+}
+
+div.pt_image_caption:after {
+	content: ".";
+	display: block;
+	height: 0;
+	clear: both;
+	visibility: hidden;
+}
+
+div.pt_image_caption {
+	float: left;
+	margin-right: 20px;
+}
+
+div.pt_image_caption p.pt_image_caption_text {
+	font-size: 0.9em;
+	font-weight: bold;
+	text-align: center;
+}
+/** end of images and captions */
+
+/* start of links styling */
+
+/* unvisited link */
+
+h4.pt-title a:link, p.pt-readmore a:link {
+	color: #0f1552;
+}
+
+/* visited link */
+
+h4.pt-title a:visited, p.pt-readmore a:visited {
+	color: #0f1552;
+}
+
+/* mouse over link */
+
+h4.pt-title a:hover, p.pt-readmore a:hover {
+	color: #590c0c;
+}
+
+/* selected link */
+
+h4.pt-title a:active, p.pt-readmore a:active {
+	color: #faf3b9;
+}
+
+/* end of link styling */
+
+/* to force your images down to a specific width, uncomment this css*/
+
+div.pt_image_caption img {
+	width: 300px;
+}
+
+div.pt_image_caption iframe {
+	width: 300px;
+}
+
+div.pt-video iframe, p.pt_embed iframe {
+	width: 300px;
+}
+
+/** end of override of your images/embeds widths */
+
+/** annotations */
+
+p.pt-annotation-title {
+	font-weight: bold;
+	text-align: left;
+	font-size: 1.1em;
+	margin-bottom: 1px;
+}
+
+p.pt-annotation {
+	border: 1px solid #ccc;
+	padding: 10px;
+	margin-top: 1px;
+}
+
+/*end of annotations */
+
+p.pt-spacer {
+	clear: both;
+}
+
+.pt-annotation-title-h-right { text-align: right; }
+.pt-annotation-title-h-left { text-align: left; }
+.pt-annotation-title-v-top { vertical-align: top; }
+.pt-annotation-title-v-middle { vertical-align: middle; }
+.pt-annotation-title-v-bottom { vertical-align: bottom; }
+
+.aligncenter { text-align: center; margin: auto; margin-left: auto; display: block; }
+.alignright { text-align: right; float: right;}
+.alignleft { text-align: left; float: left; }
+
+.pt-spacer img { border: none; width: 1px; height: 1px; }
+.clear { clear:both; }
+
+.pt_photo_caption { color: #888888; font-style: italic; margin: auto; max-width: 200px; text-align: center; font-size: 12px; }
+
+.alignright .pt_photo { margin-left: 20px; }
+.alignleft .pt_photo { margin-right: 20px; }

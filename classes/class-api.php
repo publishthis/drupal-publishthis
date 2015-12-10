@@ -5,7 +5,7 @@ class Publishthis_API extends Publishthis_API_Common {
    * Publishthis_API constructor
    */
   function __construct() {    
-    global $pt_settings_value;
+    global $pt_settings_value;  
    
     include drupal_get_path('module', 'publishthis') . '/publishthis-settings.php';
 
