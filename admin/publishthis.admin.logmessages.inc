@@ -157,7 +157,7 @@ function publishthis_log_messages_form_submit($form, &$form_state) {
         drupal_set_message( t("Selected messages have been deleted successfully.") );
       }
      
-      drupal_goto("admin/config/system/publishthis/log-messages");      
+      drupal_goto("admin/config/publishthis/log-messages");
     
     }
     
@@ -177,7 +177,7 @@ function publishthis_log_messages_delete() {
     
     $delete =db_delete('watchdog') ->condition('wid', $wid) ->execute();      
     drupal_set_message('One record has been deleted successfully.');
-    drupal_goto("admin/config/system/publishthis/log-messages");
+    drupal_goto("admin/config/publishthis/log-messages");
     
   }
   
@@ -259,24 +259,6 @@ function publishthis_log_messages_export() {
       }
       $output .= "\n";
     }
-
-    $output .= "\n\n";
-    $output .= "Style Options:\n";
-    $pt_styles = unserialize(variable_get('pt_style_options'));
-    $styles_log = '';
-    if($pt_styles) {
-      foreach($pt_styles as $k=>$style) {
-        $styles_log .= "\n" . $k . ":\n";
-
-        foreach($style as $k_style=>$v_style) {
-          $styles_log .= $k_style."=".$v_style."\n";
-        }
-      }
-    }
-    else {
-      $styles_log .= "\n\nNo style options saved\n";
-    }
-    $output .= $styles_log;
   
   $filename = $file."-".time();
   // header

@@ -14,7 +14,6 @@ function publishthis_schema() {
       'id' => array('type' => 'serial', 'not null' => TRUE),
       'name' => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE),
       'title' => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE),
-      'format_type' => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE),
       'value' => array('type' => 'blob', 'not null' => TRUE),
     ),
     'primary key' => array('id'),
@@ -33,38 +32,6 @@ function publishthis_schema() {
 }
 
 /**
- * Implementation of hook_update().
- */
-function publishthis_update_08() {
-  $spec = array(
-    'type' => 'varchar',
-     'length' => '6000',
-     'not null' => TRUE,
-     'default' => '',
-     'description' => 'PTMetaData',
-  );
-  if (!db_field_exists('node', 'ptmetadata')) {
-    db_add_field( 'node', 'ptmetadata', $spec);
-  }
-}
-
-/**
- * Implementation of hook_install().
- */
-function publishthis_install() {
-    $spec = array(
-     'type' => 'varchar',
-     'length' => '6000',
-     'not null' => TRUE,
-     'default' => '',
-     'description' => 'PTMetaData',
-   );
-  if (!db_field_exists('node', 'ptmetadata')) {
-    db_add_field( 'node', 'ptmetadata', $spec);
-  }
-}
-
-/**
  * Implementation of hook_uninstall().
  */
 function publishthis_uninstall() {
@@ -76,64 +43,4 @@ function publishthis_uninstall() {
 
   cache_clear_all('publishthis','cache',TRUE);
   menu_rebuild();
-  db_drop_field('node', 'ptmetadata');
-}
-function publishthis_fields_field_schema($field) {
-  switch($field['type']) {
-    case 'dnd_fields_ability':
-      $columns = array(
-        'ability' => array(
-          'type' => 'varchar',
-          'length' => '32',
-          'not null' => FALSE,
-        ),
-        'score' => array(
-          'type' => 'int',
-          'size' => 'small',
-          'not null' => TRUE,
-          'default' => 0,
-        ),
-        'mod' => array(
-          'type' => 'int',
-          'size' => 'small',
-          'not null' => TRUE,
-          'default' => 0,
-        ),
-        'tempscore' => array(
-          'type' => 'int',
-          'size' => 'small',
-          'not null' => TRUE,
-          'default' => 0,
-        ),
-        'tempmod' => array(
-          'type' => 'int',
-          'size' => 'small',
-          'not null' => TRUE,
-          'default' => 0,
-        ),
-      );
-      break;
-    case 'dnd_fields_skill':
-      $columns = array(
-        'skill' => array(
-          'type' => 'varchar',
-          'length' => '128',
-          'not null' => FALSE,
-        ),
-        'ranks' => array(
-          'type' => 'int',
-          'size' => 'small',
-          'not null' => TRUE,
-          'default' => 0,
-        ),
-      );
-      $indexes = array(
-        'skill' => array('skill'),
-      );
-      break;
-  }
-  return array(
-    'columns' => $columns,
-    'indexes' => $indexes,
-  );
 }

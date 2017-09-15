@@ -1,15 +1,88 @@
 .hidden { display: none; }
 .pt-footer-logo h2{ text-align:right; }
 #pt_curated_by {
-  clear: both; 
-  margin-left: auto; 
-  margin-right: auto; 
+  clear: both;
+  margin-left: auto;
+  margin-right: auto;
   padding: 10px 10px 0px 10px;
   text-align:right;
 }
 #footer .block-publishthis { text-align:right; }
 .horizontal-list>div.form-item { display: inline-table; margin-right: 18px; }
 .horizontal-list>div.form-item label.option { display: inline-table; vertical-align: middle; }
+
+/*#############*/
+
+.container-inline div, .container-inline label {
+  display: inline-block;
+}
+
+.pta-form-wrapper {
+  display: table;
+  background: linear-gradient(to right,#f9f9fa 0%,#f9f9fa 300px,#fff 300px,#fff 100%) top repeat;
+}
+.pta-form-wrapper .header, .pta-form-wrapper .action-links {
+  padding-left: 15px;
+}
+.pta-form-wrapper > .form-item {
+  border-top: 1px solid #ccc;
+}
+.pta-form-wrapper > .form-item.form-item-pta-action-title {
+  background: #fff;
+  margin-bottom: 0;
+  padding-bottom: 1em;
+  padding-top: 1em;
+}
+.pta-form-wrapper > .form-item.form-item-pta-action-title, .pta-form-wrapper > .form-item.form-item-pta-content-type, .pta-form-wrapper > .form-item.pta-image-size {
+  border-top: none;
+}
+.pta-form-wrapper .form-item label{
+  font-size: 16px;
+}
+.pta-form-wrapper > .form-item > label {
+  display: inline-block;
+  width: 300px;
+  font-size: 14px;
+  font-weight: bold;
+  padding:15px 0 0 15px;
+  margin:0 15px 0 0;
+}
+.pta-form-wrapper > .form-item.form-item-pta-action-title > label {
+  display: block;
+  width: auto;
+  border-top: none;
+  padding: 0;
+}
+.pta-form-wrapper .form-item.form-item-pta-post-template-url, .pta-form-wrapper .form-item.pta-image-size {
+  padding-left: 315px;
+}
+.pta-form-wrapper > .form-item.form-type-radios > label, .pta-form-wrapper > .form-item.form-type-checkboxes > label {
+  display: table-cell;
+  width: 300px;
+  font-size: 14px;
+  font-weight: bold;
+}
+.pta-form-wrapper > .form-item.form-type-radios > div, .pta-form-wrapper > .form-item.form-type-checkboxes > div {
+  display: table-cell;
+  padding-left: 15px;
+}
+
+.form-item table{ width: auto; }
+.form-item table td > div {
+  display: inline-block;
+}
+.form-item table td > div label{
+  display: inline-block;
+  font-size: 16px;
+}
+.adminimal-theme .form-item table tr.even:hover {
+  background: #f3f4ee;
+}
+.adminimal-theme .form-item table tr.odd:hover {
+  background: #fff;
+}
+
+/*############*/
 
 fieldset.horizontal-list div.form-item.form-type-radios>label,
 fieldset.horizontal-list div.form-item.form-type-checkboxes>label,
@@ -22,9 +95,6 @@ fieldset.horizontal-list div.form-item.form-type-select>label { float: left; wid
 .field_inline .form-checkboxes .form-type-checkbox { float: left; margin-right: 15px; }
 .margins .form-type-select label, .paddings .form-type-select label {  float: left; padding-right: 10px; }
 .margins .form-type-select, .paddings .form-type-select, { width: 110px;}
-.form-type-jquery-colorpicker { float: left; margin-top: 18px !important; width: 139px;}
-.form-type-jquery-colorpicker label {display: inline; float: right; font-weight: normal; padding-right: 16px !important; padding-top: 6px !important;}
-.form-type-jquery-colorpicker .jquery_colorpicker { float: left; }
 
 .form-item-pt-style-title-font-style-custom-bold label { font-weight: bold;}
 .form-item-pt-style-title-font-style-custom-italic label {font-style: italic;}
@@ -80,13 +150,7 @@ fieldset.horizontal-list div.form-item.form-type-select>label { float: left; wid
 
 .form-disabled legend a { color: #9E9E9E; }
 .featured-image-box {position: relative;}
-.featured-image-box .form-item-featured-image-width,
-.featured-image-box .form-item-embed-image-width,
-.featured-image-box .form-item-image-width {
-  position: absolute;
-  left: 70px;
-  top: 55px;
-}
+
 .featured-image-box .form-item-featured-image-height label,
 .featured-image-box .form-item-embed-image-height label,
 .featured-image-box .form-item-image-height label {
@@ -96,20 +160,7 @@ fieldset.horizontal-list div.form-item.form-type-select>label { float: left; wid
   font-size: 12px;
   line-height: 22px;
 }
-.featured-image-box .form-item-featured-image-height,
-.featured-image-box .form-item-embed-image-height,
-.featured-image-box .form-item-image-height {
-  position: absolute;
-  left: 150px;
-  top: 55px;
-}
-.featured-image-box .form-item-featured-image-maxwidth,
-.featured-image-box .form-item-embed-image-maxwidth,
-.featured-image-box .form-item-image-maxwidth {
-  position: absolute;
-  left: 95px;
-  top: 85px;
-}
+
 .taxonomy-publish-block{
 	width: 100%;
 	overflow: hidden;
@@ -118,9 +169,9 @@ fieldset.horizontal-list div.form-item.form-type-select>label { float: left; wid
 	float: left;
 	margin: 0 20px 0 0;
 }
-#endpoint_input{
+/*#endpoint_input{
 	display: none;
-}
+}*/
 .taxonomy-publish-block .taxonomy-group-block{
 	float: left;
 }
@@ -130,7 +181,7 @@ fieldset.horizontal-list div.form-item.form-type-select>label { float: left; wid
 .pt-options .image_field_style .form-item-featured-image-height { margin: -20px 0 0 0; padding: 0; float: left; width: 140px; }
 .pt-options .image_field_style .form-item-featured-image-height label { float: left; font-weight: normal; margin-right: 10px; font-size: 12px; }
 .pt-options .image_field_style .image_width_style {float: left; width: 100%; margin-left: -27px; margin-bottom: 8px; }
-.pt-options .image_field_style .form-item-featured-image-maxwidth { margin: 0; padding: 0; float: left;  width: 100%; } 
+.pt-options .image_field_style .form-item-featured-image-maxwidth { margin: 0; padding: 0; float: left;  width: 100%; }
 
 .pt-customize .image_text_fields { clear: right; float: left; width: 235px; margin-top: 62px;  margin-left: -28px; }
 .pt-customize .image_field_style .form-item-image-width { margin: 0 10px 0 0; padding: 0; float: left; }
@@ -161,7 +212,7 @@ fieldset.horizontal-list div.form-item.form-type-select>label { float: left; wid
 }
 .pt-annotation-title-h-right { text-align: right; }
 .pt-annotation-title-h-left { text-align: left; }
-.pt-annotation-title-v-top { vertical-align: top; } 
+.pt-annotation-title-v-top { vertical-align: top; }
 .pt-annotation-title-v-middle { vertical-align: middle; }
 .pt-annotation-title-v-bottom { vertical-align: bottom; }
 

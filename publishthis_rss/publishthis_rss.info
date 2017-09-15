@@ -1,6 +1,0 @@
-name = Publishthis RSS feeds
-description = Publishthis RSS
-package = Publishthis Modules
-dependencies[] = publishthis
-version = 7.x-1.0
-core = 7.x

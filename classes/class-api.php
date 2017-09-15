@@ -104,14 +104,15 @@ class Publishthis_API extends Publishthis_API_Common {
     curl_close($ch);
 
     // check for failure
-    if ( !isset($data) || $status != 200 ) {      
+    if ( !isset($data) || $status != 200 ) {
       $message = array(
         'message' => 'PublishThis API error',
         'status' => 'error',
-        'details' => 'URL: '.$url
+        'details' => 'PublishThis API error URL: '.$url
       );
       $this->_log_message( $message, "2" );
-      throw new Exception( "PublishThis API error ({$url})." );
+      // This exception can break the process
+      //throw new Exception( "PublishThis API error (".$url.")." );
     }
 
     $json = "";
@@ -120,7 +121,14 @@ class Publishthis_API extends Publishthis_API_Common {
       $json = json_decode( $data );
 
       if ( ! $json ) {
-        throw new Exception( "inner JSON conversion error ({$url})." );
+        $message = array(
+          'message' => 'inner JSON conversion error ('.$url.').',
+          'status' => 'error',
+          'details' => ''
+        );
+        $this->_log_message( $message, "2" );
+        // This exception can break the process
+        //throw new Exception( "inner JSON conversion error ({$url})." );
       }
 
     } catch ( Exception $ex ) {
@@ -144,27 +152,32 @@ class Publishthis_API extends Publishthis_API_Common {
           'details' => $ex->getMessage ()
         );
         $this->_log_message( $message, "2" );
-
-        throw new Exception( "Your Drupal install is not correctly decoding our API response, please contact your client service representative" );
+        // This exception can break the process
+        //throw new Exception( "Your Drupal install is not correctly decoding our API response, please contact your client service representative" );
       }
     }
 
     if ( ! $json ) {
-      throw new Exception( "JSON conversion error ({$url})." );
+      $message = array(
+        'message' => 'JSON conversion error ('.$url.').',
+        'status' => 'error',
+        'details' => ''
+      );
+      $this->_log_message( $message, "2" );
+      // This exception can break the process
+      //throw new Exception( "JSON conversion error ({$url})." );
     }
-
     return $status == 200 ? $json->resp->data : null;
 
   }
 
   
   /**
-   * Gets an option value by key
+   * Gets template options from PublishThis
    *
-   * @param unknown $key Option key
-   * @return Option value
+   * @return PublishThis templates array
    */
-  public function get_template_option( $params = array() ) {
-    return $this->get_feed_templates( $params );
+  public function get_template_options() {
+    return $this->get_html_templates();
   }
 }
