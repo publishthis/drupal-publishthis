@@ -25,63 +25,18 @@ function publishthis_settings($form, &$form_state) {
     }
   } catch (Exception $ex) {}
 
-
-  $form['pt_settings']['endpoint'] = array(
-    '#type'        => 'fieldset',
-    '#title'       => t('Endpoint'),
-    '#weight'      => 0,
-    '#tree'        => FALSE,
-    '#collapsible' => TRUE,
-    '#collapsed'   => FALSE,
-    '#attributes'  => array(
-      'class' => array(
-        'container-inline'
-      )
-    ),
-  );
-
-  $pt_endpoint = t('Please set endpoint path and endpoint token.');
-  $pt_endpoint_path = 'endpoint';
-  $pt_endpoint_token = getRandomWord();
-
-  if (isset($pt_value['endpoint'])) {
-    $pt_endpoint = t('Current endpoint: <strong>@endpoint</strong>', array('@endpoint' => $pt_value['endpoint']));
-    $pt_endpoint.= '<br />To change Endpoint URL please set endpoint path and endpoint token.';
-
-    if (!isset($pt_value['endpoint_path'])) {
-      $pt_endpoint_path = substr($pt_value['endpoint'], strlen($base_url) + 1, strlen($base_url) - strrpos($pt_value['endpoint'], '/'));
-    }
-    else {
-      $pt_endpoint_path = $pt_value['endpoint_path'];
-    }
-
-    if (!isset($pt_value['endpoint_token'])) {
-      $pt_endpoint_token = substr($pt_value['endpoint'], strrpos($pt_value['endpoint'], '/') + 1);
-    }
-    else {
-      $pt_endpoint_token = $pt_value['endpoint_token'];
-    }
+  if (isset($pt_value['endpoint']) && !empty($pt_value['endpoint'])) {
+    $pt_endpoint = $pt_value['endpoint'];
   }
-
-  $form['pt_settings']['endpoint']['description'] = array(
-    '#type' => 'markup',
-    '#markup' => '<p>' . $pt_endpoint . '</p>',
-  );
-
-  $form['pt_settings']['endpoint']['endpoint_path'] = array(
-	  '#type'          => 'textfield',
-	  '#default_value' => $pt_endpoint_path,
-	  '#required'      => TRUE,
-	  '#prefix'        => $base_url . '/ ',
-	  '#size'          => 20,
-  );
-
-  $form['pt_settings']['endpoint']['endpoint_token'] = array(
+  else {
+    $pt_endpoint = getRandomWord();
+  }
+  $form['pt_settings']['endpoint'] = array(
     '#type'          => 'textfield',
-    '#prefix'        => '/ ',
-    '#default_value' => $pt_endpoint_token,
+    '#title'         => t('Endpoint'),
+    '#default_value' => isset($pt_value['endpoint']) ? $pt_value['endpoint'] : $base_url . '/endpoint/' . $pt_endpoint,
     '#required'      => TRUE,
-    '#size'          => 40,
+    '#description'   => t(''),
   );
   $form['pt_settings']['taxonomy'] = array(
 	  '#type'          => 'checkboxes',
@@ -224,7 +179,6 @@ function publishthis_settings_validate($form, &$form_state) {
 	  if ($token['valid'] != 1) {
 	    form_set_error('api_token', $token['message']);
 	  }
-	  $form_state['values']['endpoint'] = $base_url . '/' . $form_state['values']['endpoint_path'] . '/' . $form_state['values']['endpoint_token'];
   }
 }
 

@@ -104,7 +104,7 @@ function publishthis_menu() {
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => -10
   );
-  
+
   $items['admin/config/publishthis'] = array(
     'title' => 'PublishThis',
     'description' => 'Configure PublishThis Curation Module',
@@ -124,8 +124,8 @@ function publishthis_menu() {
     'access arguments' => array('administer'),
     'file' => 'publishthis.admin.publishingactions.inc',
     'file path' => drupal_get_path('module', 'publishthis') . '/admin'
-  );  
-    
+  );
+
   $items['admin/config/publishthis/publishing-addactions'] = array(
     'title' => 'PublishThis',
     'type' => MENU_CALLBACK,
@@ -136,7 +136,7 @@ function publishthis_menu() {
     'file' => 'publishthis.admin.publishingactions.inc',
     'file path' => drupal_get_path('module', 'publishthis') . '/admin',
   );
-  
+
   $items['admin/config/publishthis/publishing-editactions/%'] = array(
     'title' => 'Publishing Actions',
     'type' => MENU_CALLBACK,
@@ -147,7 +147,7 @@ function publishthis_menu() {
     'file' => 'publishthis.admin.publishingactions.inc',
     'file path' => drupal_get_path('module', 'publishthis') . '/admin',
   );
-  
+
   $items['publishthis/publishing-actions/delete/%'] = array(
     'title' => 'Publishing Actions Delete',
     'type' => MENU_CALLBACK,
@@ -157,7 +157,7 @@ function publishthis_menu() {
     'file' => 'publishthis.admin.publishingactions.inc',
     'file path' => drupal_get_path('module', 'publishthis') . '/admin',
   );
-  
+
   $items['admin/config/publishthis/log-messages'] = array(
     'title' => 'Publishing Log',
     'type' => MENU_LOCAL_TASK,
@@ -168,7 +168,7 @@ function publishthis_menu() {
     'file path' => drupal_get_path('module', 'publishthis') . '/admin',
     'weight' => 10
   );
-  
+
   $items['publishthis/log-messages/delete/%'] = array(
     'title' => 'Log Messages Delete',
     'type' => MENU_CALLBACK,
@@ -178,7 +178,7 @@ function publishthis_menu() {
     'file' => 'publishthis.admin.logmessages.inc',
     'file path' => drupal_get_path('module', 'publishthis') . '/admin',
   );
-  
+
   $items['publishthis/log-messages/export/%'] = array(
     'title' => 'Export Log Messages',
     'type' => MENU_CALLBACK,
@@ -191,8 +191,12 @@ function publishthis_menu() {
 
   // Get endpoint form settings
   $pt_value = unserialize(variable_get('pt_settings'));
-  $custom_endpoint = isset($pt_value['endpoint_path']) && !empty($pt_value['endpoint_path']);
-  $endpoint = $custom_endpoint ? $pt_value['endpoint_path'] : 'endpoint';
+  $endpoint = 'endpoint';
+  if (isset($pt_value['endpoint']) && !empty($pt_value['endpoint'])) {
+    $endpoint = substr(parse_url($pt_value['endpoint'], PHP_URL_PATH), 1);
+    // Remove token, and replace it with menu parameter.
+    $endpoint = substr($endpoint, 0, strrpos($endpoint, '/'));
+  }
   $token_position = substr_count($endpoint, '/') + 1;
 
   $items[$endpoint . '/%'] = array(
