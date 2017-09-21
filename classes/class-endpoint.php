@@ -42,7 +42,7 @@ class Publishthis_Endpoint {
    * Returns json response with failed status
    */
   function sendFailure($message) {
-	  $obj = NULL;
+	  $obj = new stdClass();
 
 	  $obj->success      = FALSE;
 	  $obj->errorMessage = $this->escapeJsonString($message);
@@ -54,6 +54,9 @@ class Publishthis_Endpoint {
    * Returns json response with succeess status
    */
   function sendSuccess($obj = NULL) {
+		if (empty($obj)) {
+			$obj = new stdClass();
+		}
 
 	  $obj->success      = TRUE;
 	  $obj->errorMessage = NULL;
